@@ -1,0 +1,50 @@
+plugins {
+    id 'org.springframework.boot' version '2.5.0'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'java'
+    id "org.flywaydb.flyway" version "7.9.1"
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    runtimeOnly 'mysql:mysql-connector-java'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+
+flyway {
+    url = 'jdbc:h2:mem:mydb'
+    user = 'myUsr'
+    password = 'mySecretPwd'
+    schemas = ['schema1', 'schema2', 'schema3']
+    placeholders = [
+            'keyABC': 'valueXYZ',
+            'otherplaceholder': 'value123'
+    ]
+}
+
+task migrateDatabase1(type: org.flywaydb.gradle.task.FlywayMigrateTask) {
+    url = 'jdbc:h2:mem:mydb1'
+    user = 'myUsr1'
+    password = 'mySecretPwd1'
+}
