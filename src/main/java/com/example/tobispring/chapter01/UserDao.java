@@ -15,12 +15,7 @@ public class UserDao {
 
     /** DB 저장 결과 */
     public void add(User user) throws ClassNotFoundException, SQLException {
-        Class.forName("com.mysql.cj.jdbc.Driver");  //com.mysql.jdbc.Driver -> Depericated!
-
-        //DB 연결을 위한 Connection을 가져온다.
-        Connection c = DriverManager.getConnection(
-                "jdbc:mysql://localhost:3307/springbook", "spring", "book"
-        );
+        Connection c = getConnection();
 
         // SQL을 담은 PreparedStatement를 가져온다.
         PreparedStatement ps = c.prepareStatement(
@@ -39,10 +34,7 @@ public class UserDao {
 
     /** 조회 실행 결과 */
     public User get(String id) throws ClassNotFoundException, SQLException {
-        Class.forName("com.mysql.cj.jdbc.Driver");
-        Connection c = DriverManager.getConnection(
-                "jdbc:mysql://localhost:3307/springbook", "spring", "book"
-        );
+        Connection c = getConnection();
 
         PreparedStatement ps = c.prepareStatement(
                 "select * from users where id=?"
@@ -63,5 +55,16 @@ public class UserDao {
         c.close();
 
         return user;
+    }
+
+    /** 중복된 코드를  private 메서드로 변환 */
+    private Connection getConnection() throws ClassNotFoundException, SQLException {
+
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        Connection c = DriverManager.getConnection(
+            "jdbc:mysql://localhost:3307/springbook", "spring", "book"
+        );
+
+        return c;
     }
 }
