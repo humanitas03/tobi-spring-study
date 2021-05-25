@@ -11,19 +11,19 @@ import java.sql.*;
 /** Chapter 1. UserDaO
  *  -
  */
-public class UserDao {
+public abstract class UserDao extends MysqlConnectionMaker implements ConnectionMaker {
 
-    private SimpleConnectionMaker simpleConnectionMaker;
+    private ConnectionMaker connectionMaker;
 
     public UserDao(){
-        this.simpleConnectionMaker = new SimpleConnectionMaker();
+        this.connectionMaker = new MysqlConnectionMaker();  //앗.. 여기에는 클래스 이름이 나오네
     }
 
     /** DB 저장 결과
      * ch-1.3.1 독립된 SimpleConnectionMaker를 주입받아 커넥션 실행
      * */
     public void add(User user) throws ClassNotFoundException, SQLException {
-        Connection c = simpleConnectionMaker.makeNewConnection();
+        Connection c = connectionMaker.makeConnection();        //인터페이스에 정의된 메서드를 사용하므로 클래스가 바뀐다고 해도 메서드가 변경될 걱정은 없다.
 
         // SQL을 담은 PreparedStatement를 가져온다.
         PreparedStatement ps = c.prepareStatement(
@@ -44,7 +44,7 @@ public class UserDao {
      * ch-1.3.1 독립된 SimpleConnectionMaker를 주입받아 커넥션 실행
      * */
     public User get(String id) throws ClassNotFoundException, SQLException {
-        Connection c = simpleConnectionMaker.makeNewConnection();
+        Connection c = connectionMaker.makeConnection();
 
         PreparedStatement ps = c.prepareStatement(
                 "select * from users where id=?"
