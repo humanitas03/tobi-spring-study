@@ -11,11 +11,19 @@ import java.sql.*;
 /** Chapter 1. UserDaO
  *  -
  */
-public abstract class UserDao {
+public class UserDao {
 
-    /** DB 저장 결과 */
+    private SimpleConnectionMaker simpleConnectionMaker;
+
+    public UserDao(){
+        this.simpleConnectionMaker = new SimpleConnectionMaker();
+    }
+
+    /** DB 저장 결과
+     * ch-1.3.1 독립된 SimpleConnectionMaker를 주입받아 커넥션 실행
+     * */
     public void add(User user) throws ClassNotFoundException, SQLException {
-        Connection c = getConnection();
+        Connection c = simpleConnectionMaker.makeNewConnection();
 
         // SQL을 담은 PreparedStatement를 가져온다.
         PreparedStatement ps = c.prepareStatement(
@@ -32,9 +40,11 @@ public abstract class UserDao {
         c.close();
     }
 
-    /** 조회 실행 결과 */
+    /** 조회 실행 결과
+     * ch-1.3.1 독립된 SimpleConnectionMaker를 주입받아 커넥션 실행
+     * */
     public User get(String id) throws ClassNotFoundException, SQLException {
-        Connection c = getConnection();
+        Connection c = simpleConnectionMaker.makeNewConnection();
 
         PreparedStatement ps = c.prepareStatement(
                 "select * from users where id=?"
@@ -56,9 +66,4 @@ public abstract class UserDao {
 
         return user;
     }
-
-    /** ch1.1.2 중복된 코드를  private 메서드로 변환
-     *  ch-1.2.3 추상메스드로 변경
-     * */
-    public abstract Connection getConnection() throws ClassNotFoundException, SQLException;
 }

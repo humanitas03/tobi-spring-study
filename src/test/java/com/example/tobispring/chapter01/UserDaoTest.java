@@ -42,7 +42,7 @@ public class UserDaoTest {
     public void userDaoTestPhase1() throws ClassNotFoundException, SQLException {
 
         /** ch-1.2.3 테스트 코드 수정 */
-        UserDao dao = new NUserDao();
+        UserDao dao = new UserDao();
 
         User user = new User();
         user.setId("whiteship");
