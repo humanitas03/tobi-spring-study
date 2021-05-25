@@ -11,12 +11,15 @@ import java.sql.*;
 /** Chapter 1. UserDaO
  *  -
  */
-public abstract class UserDao extends MysqlConnectionMaker implements ConnectionMaker {
+public class UserDao {
 
-    private ConnectionMaker connectionMaker;
+    private final ConnectionMaker connectionMaker;
 
-    public UserDao(){
-        this.connectionMaker = new MysqlConnectionMaker();  //앗.. 여기에는 클래스 이름이 나오네
+    /**
+     * ch-1.3.3 생성자 수정(의존성 주입방식)
+     */
+    public UserDao(ConnectionMaker connectionMaker){
+        this.connectionMaker = connectionMaker;
     }
 
     /** DB 저장 결과

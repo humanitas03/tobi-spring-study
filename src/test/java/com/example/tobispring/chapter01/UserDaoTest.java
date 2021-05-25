@@ -41,8 +41,13 @@ public class UserDaoTest {
     @Test
     public void userDaoTestPhase1() throws ClassNotFoundException, SQLException {
 
-        /** ch-1.2.3 테스트 코드 수정 */
-        UserDao dao = new UserDao();
+
+        /** ch-1.2.3 테스트 코드 수정
+         *  ch-1.3.3 관계 설정 책임이 추가된 UserDao 클라이언트
+         *    -> UserDaoTest는 UserDao와 ConnectionMaker 구현 클래스와의 런타임 오브젝트 의존관계를 설정하는 책임을 담당해야함.
+         * */
+        ConnectionMaker connectionMaker = new MysqlConnectionMaker();
+        UserDao dao = new UserDao(connectionMaker);
 
         User user = new User();
         user.setId("whiteship");
