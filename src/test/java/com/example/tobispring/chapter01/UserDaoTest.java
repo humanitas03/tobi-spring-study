@@ -40,7 +40,9 @@ public class UserDaoTest {
 
     @Test
     public void userDaoTestPhase1() throws ClassNotFoundException, SQLException {
-        UserDao dao = new UserDao();
+
+        /** ch-1.2.3 테스트 코드 수정 */
+        UserDao dao = new NUserDao();
 
         User user = new User();
         user.setId("whiteship");

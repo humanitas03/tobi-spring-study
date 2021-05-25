@@ -11,7 +11,7 @@ import java.sql.*;
 /** Chapter 1. UserDaO
  *  -
  */
-public class UserDao {
+public abstract class UserDao {
 
     /** DB 저장 결과 */
     public void add(User user) throws ClassNotFoundException, SQLException {
@@ -57,14 +57,8 @@ public class UserDao {
         return user;
     }
 
-    /** 중복된 코드를  private 메서드로 변환 */
-    private Connection getConnection() throws ClassNotFoundException, SQLException {
-
-        Class.forName("com.mysql.cj.jdbc.Driver");
-        Connection c = DriverManager.getConnection(
-            "jdbc:mysql://localhost:3307/springbook", "spring", "book"
-        );
-
-        return c;
-    }
+    /** ch1.1.2 중복된 코드를  private 메서드로 변환
+     *  ch-1.2.3 추상메스드로 변경
+     * */
+    public abstract Connection getConnection() throws ClassNotFoundException, SQLException;
 }
