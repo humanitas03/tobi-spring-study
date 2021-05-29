@@ -7,6 +7,7 @@
 package com.example.tobispring.chapter01;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
@@ -39,6 +40,7 @@ public class UserDaoTest {
     }
 
     @Test
+    @DisplayName("UserDao 테스트 코드 입니다.")
     public void userDaoTestPhase1() throws ClassNotFoundException, SQLException {
 
 
@@ -47,7 +49,9 @@ public class UserDaoTest {
          *    -> UserDaoTest는 UserDao와 ConnectionMaker 구현 클래스와의 런타임 오브젝트 의존관계를 설정하는 책임을 담당해야함.
          * */
         ConnectionMaker connectionMaker = new MysqlConnectionMaker();
-        UserDao dao = new UserDao(connectionMaker);
+//        UserDao dao = new UserDao(connectionMaker);
+        //팩토리를 사용하도록 수정한 UserDao클래스
+        UserDao dao = new DaoFactory().userDao();
 
         User user = new User();
         user.setId("whiteship");
@@ -64,4 +68,5 @@ public class UserDaoTest {
 
         System.out.println(user2.getId() + "조회 성공!");
     }
+
 }
