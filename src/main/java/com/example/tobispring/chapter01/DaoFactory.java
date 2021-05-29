@@ -4,21 +4,36 @@
  */
 package com.example.tobispring.chapter01;
 
+
+import com.mysql.cj.jdbc.Driver;
+import javax.sql.DataSource;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 
 @Configuration
 public class DaoFactory {
 
   @Bean
-  public UserDao userDao(){
-    //팩토리의 메소드는 UserDao 타입의 오브젝트를 어떻게 만들고, 어떻게 준비시킬지 결정.
-    /**
-     *  구현해야될 DAO가 많아지는 경우 생성 메서드의 중복이 발생하므로,
-     *  connectionMaker를 분리해서 중복을 제거하도록 한다.
-     */
+  public DataSource dataSource(){
+    SimpleDriverDataSource dataSource = new SimpleDriverDataSource();
 
-    return new UserDao(countingConnectionMaker());
+    //gradle에서 runTimeOnly에서 implementation으로 변경
+    dataSource.setDriverClass(Driver.class);
+    dataSource.setUrl("jdbc:mysql://localhost:3307/springbook");
+    dataSource.setUsername("spring");
+    dataSource.setPassword("book");
+    return dataSource;
+  }
+
+
+  @Bean
+  public UserDao userDao(){
+    UserDao userDao = new UserDao();
+    userDao.setDataSource(dataSource());
+    return userDao;
   }
 
   @Bean
