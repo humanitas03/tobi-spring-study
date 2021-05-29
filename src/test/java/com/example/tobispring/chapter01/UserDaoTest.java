@@ -14,6 +14,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 public class UserDaoTest {
 
@@ -43,15 +45,11 @@ public class UserDaoTest {
     @DisplayName("UserDao 테스트 코드 입니다.")
     public void userDaoTestPhase1() throws ClassNotFoundException, SQLException {
 
+        /* ApplicationContext를 지정하는게 사실상 의미가 있을지 모르지만....*/
+        ApplicationContext context = new AnnotationConfigApplicationContext(DaoFactory.class);
+        UserDao dao = context.getBean("userDao", UserDao.class);    //userDao라는 빈을 가져온다.
 
-        /** ch-1.2.3 테스트 코드 수정
-         *  ch-1.3.3 관계 설정 책임이 추가된 UserDao 클라이언트
-         *    -> UserDaoTest는 UserDao와 ConnectionMaker 구현 클래스와의 런타임 오브젝트 의존관계를 설정하는 책임을 담당해야함.
-         * */
-        ConnectionMaker connectionMaker = new MysqlConnectionMaker();
-//        UserDao dao = new UserDao(connectionMaker);
-        //팩토리를 사용하도록 수정한 UserDao클래스
-        UserDao dao = new DaoFactory().userDao();
+
 
         User user = new User();
         user.setId("whiteship");
