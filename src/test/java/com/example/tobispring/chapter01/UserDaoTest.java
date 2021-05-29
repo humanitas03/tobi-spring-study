@@ -50,7 +50,6 @@ public class UserDaoTest {
         UserDao dao = context.getBean("userDao", UserDao.class);    //userDao라는 빈을 가져온다.
 
 
-
         User user = new User();
         user.setId("whiteship");
         user.setName("백기선");
@@ -65,6 +64,10 @@ public class UserDaoTest {
         System.out.println(user2.getPassword());
 
         System.out.println(user2.getId() + "조회 성공!");
+
+        //DAO 사용 후 Connection 카운트 조회 로직.
+        CountingConnectionMaker ccm = context.getBean("countingConnectionMaker", CountingConnectionMaker.class);
+        System.out.println("Connection counter : " + ccm.getCounter());
     }
 
 }

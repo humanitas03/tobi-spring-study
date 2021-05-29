@@ -18,12 +18,19 @@ public class DaoFactory {
      *  connectionMaker를 분리해서 중복을 제거하도록 한다.
      */
 
-    return new UserDao(connectionMaker());
+    return new UserDao(countingConnectionMaker());
   }
 
+  @Bean
+  public ConnectionMaker countingConnectionMaker(){
+    return new CountingConnectionMaker(connectionMaker());
+  }
 
   @Bean
   public ConnectionMaker connectionMaker(){
     return new MysqlConnectionMaker();
   }
+
+
+
 }

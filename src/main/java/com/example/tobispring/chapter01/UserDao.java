@@ -7,13 +7,29 @@
 package com.example.tobispring.chapter01;
 
 import java.sql.*;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 /** Chapter 1. UserDaO
  *  -
  */
 public class UserDao {
 
-    private final ConnectionMaker connectionMaker;
+    private ConnectionMaker connectionMaker;
+
+    /** cf. 의존관계 검색(dependency lookup)
+     *
+     * 책에서는 의존성 주입 방식이 더 나은 방식으로 소개하고 있음.
+     */
+//    public UserDao(){
+//        //DaoFactory를 이용한 생성자
+//        DaoFactory daoFactory = new DaoFactory();
+//        this.connectionMaker = daoFactory.connectionMaker();
+//
+//        //의존 관계 검색을 이용
+//        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(DaoFactory.class);
+//        this.connectionMaker = context.getBean("connectionMaker", ConnectionMaker.class);
+//    }
+
 
     /**
      * ch-1.3.3 생성자 수정(의존성 주입방식)
