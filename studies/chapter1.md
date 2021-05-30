@@ -141,7 +141,7 @@ public class UserDao {
   
   
 > 추상 클래스로 정의한 UserDao  
-> ```java  
+```java  
 public abstract class UserDao {    
     
 /** DB 저장 결과 */  public void add(User user) throws ClassNotFoundException, SQLException {    
