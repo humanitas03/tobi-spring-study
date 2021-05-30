@@ -146,7 +146,7 @@
   
   * **빈(Bean)**  
  * 빈, 혹은 빈 오브젝트는 스프링의 IoC 방식에 의해 관리가 되는 오브젝트라는 의미입니다.  
-      * 스프링에서 직접 그 생성과 제어를 담당하는 오브젝트를 의미합니다.  
+      * 스프링에서 직접 그 생성과 제어를 담당하는 오브젝트를 의미합니다.
       * @Bean, @Component(@Service, @Repository, @Controller..) 등등의 어노테이션을 지정하여 Bean으로 지정할 수 있습니다.  
      
    * **빈 팩토리**  
@@ -282,3 +282,125 @@ ___
 * ~~XML을 이용해 DI 설정정보를 만드는 방법과 의존 오브젝트가 아닌 일반 값을 외부에서 설정해 런타임 시에 주입하는 방법을 알아보았다(XML설정)~~  
    * Spring MVC의 대세는 어노테이션(Annotation) 기반.  
 ___
+
+###  Appendix : chapter 1 더 알아보기
+
+* 저는 본 예제를 진행하면서 SpringBoot 프로젝트로 예제를 작성할 예정입니다.(5/30 기준으로 2.5.0 version을 사용하네요..)
+
+* 제가 처음 신입으로 신규 시스템 구축 프로젝트에 들어갔을 때도 그렇고, 현재 회사에서도 신규 시스템 개발하는데 있어서 Springboot 2 기반으로 제작을 하는 추세라서..
+  Legacy 프로젝트가 아닌 이상 대부분은
+
+
+
+
+#### A1. Springboot
+![img](https://user-images.githubusercontent.com/55119239/74508917-976b0d80-4f43-11ea-9c97-f479de176bf3.png)
+
+
+##### A1.1 개념
+* https://spring.io/projects/spring-boot
+> Spring Boot makes it easy to create stand-alone, production-grade Spring based Applications that you can "just run".
+
+> We take an opinionated view of the Spring platform and third-party libraries so you can get started with minimum fuss. Most Spring Boot applications need minimal Spring configuration.
+
+* 스프링부트는 "단독 실행가능한" 상용화 수준의 스프링 기반 어플리케이션을 만들 수 있는 도구 입니다.
+* 자동화된 설정, 라이브러리 지원, 내장 WAS(톰캣, 언더토, 제티...)을 제공하여 쉽고 빠르게 배포가능한 패키지(jar파일)로 만들 수도 있습니다.
+    * 물론 WAR로 배포 가능하도록 설정이 가능합니다.
+* __Maven이나 Gradle__을 이용해서 의존성들을 관리할 수 있으며, starter 라이브러리만으로도 초기에 세팅이 필요한 라이브러리들을 "최적화된 버전"으로 세팅이 가능하게 도와줍니다.
+    * 예제 진행하면서 개인적으로 gradle 공부할 겸.. gradle  빌드를 사용할 계획입니다.
+    * 루트 디렉토리의 build.gradle 파일에서 의존성 관리가 가능합니다.
+    *
+* Docker Integration, Acuator 등등 다양한 기능과 연동되어 확장이 가능한 환경을 제공합니다.
+
+
+##### A1.2 Spring Boot 설정
+* @SpringbootApplication 어노테이션은 Spring Web Application에 필요한 다양한 설정 정보들을 자동화 해줍니다.
+* 아래는 Spring initializr로 Web Application 프로젝트를 생성시 자동으로 생성되는 Main App class 입니다.
+```java
+@SpringBootApplication  
+public class TobispringApplication {  
+  
+    public static void main(String[] args) {  
+        SpringApplication.run(TobispringApplication.class, args);  
+  }  
+  
+}
+```
+
+* @SpringbootApplication 설정 안에는 @ComponentScan이라는 어노테이션이 있습니다.
+* 기본 디폴트로 main App 클래스의 루트 패키지 기준으로 @Component 어노테이션으로 설정된 컴포넌트들을 ApplicationContext에 빈으로 등록하게 됩니다.
+* @EnableAutoConfiguration 을 통해서 spring.factories 안에 있는 수많은 자동 설정들을 등록합니다.
+```java
+@Target(ElementType.TYPE)  
+@Retention(RetentionPolicy.RUNTIME)  
+@Documented  
+@Inherited  
+@SpringBootConfiguration  
+@EnableAutoConfiguration  
+@ComponentScan(excludeFilters = { @Filter(type = FilterType.CUSTOM, classes = TypeExcludeFilter.class),  
+  @Filter(type = FilterType.CUSTOM, classes = AutoConfigurationExcludeFilter.class) })  
+public @interface SpringBootApplication {
+```
+
+* 자동설정과 관련된 자세한 내용은 아래
+
+[공식 Doc]
+* https://docs.spring.io/spring-boot/docs/current/reference/html/features.html#features.developing-auto-configuration
+
+[블로그]
+* https://medium.com/empathyco/how-spring-boot-autoconfiguration-works-6e09f911c5ce
+* https://donghyeon.dev/spring/2020/08/01/%EC%8A%A4%ED%94%84%EB%A7%81%EB%B6%80%ED%8A%B8%EC%9D%98-AutoConfiguration%EC%9D%98-%EC%9B%90%EB%A6%AC-%EB%B0%8F-%EB%A7%8C%EB%93%A4%EC%96%B4-%EB%B3%B4%EA%B8%B0/
+  *http://dveamer.github.io/backend/SpringBootAutoConfiguration.html#@SpringBootApplication
+
+##### A1.3 SpringBoot에서 Bean 설정 관리
+
+**A1.3.1 등록**
+* Springboot에서 Bean은 두가지 방식으로 등록이 가능합니다.
+    * **Component Scan**이용
+    * 직접 Bean을 등록
+
+* **Component Scan**을 이용
+
+```java
+@Component		// 이 어노테이션으로 스프링 IOC 컨테이너가 관리하는 Bean으로 등록이 됩니다.
+public class BeanComponentSample {
+	//내부 코드 작성...
+}
+```
+
+
+* **직접 Bean을 등록**
+* 토비 책의 DaoFactory 클래스 처럼, @Configuration을 통해 설정
+> 반드시 @Configuration 이라는 어노테이션 안에 있는 클래스에서 빈을 등록해야 합니다.
+>
+
+
+**A1.3.2 사용**
+* @Autowired 또는 @Inject를 통해 주입을 시킬수 있습니다
+```java
+@RestController
+public class HelloController{
+
+	@Autowired
+	private HelloService helloService;
+	
+	...
+	
+}
+```
+
+* 기본적으로 ApplicationContext에 등록된 bean 명칭으로 변수명을 지정하면, 생성자로 주입 받을 수 있습니다.
+```java
+@Service
+public class HelloService{
+	
+	private final HelloBean helloBean;	//생성자 주입의 경우 멤벼 변수를 final로 설정이 가능합니다.
+	
+	public HelloService(HelloBean helloBean) {
+		this.helloBean = helloBean;
+	}
+}
+```
+* 빈이 여러개라면 @Primary 어노테이션으로 우선순위(기본 디폴트)로 지정할 수 있습니다.
+* @Qualifer("빈명칭")을 통해서 ApplicationContext에 등록된  Bean중에 내가 사용하고자 하는 빈을 사용할 수 도 있습니다.
+* ApplicationContext에서 getBean()으로 직접 꺼내도 됩니다.
