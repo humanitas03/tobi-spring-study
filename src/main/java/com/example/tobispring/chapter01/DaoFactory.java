@@ -18,16 +18,17 @@ public class DaoFactory {
      *  connectionMaker를 분리해서 중복을 제거하도록 한다.
      */
 
-    return new UserDao(countingConnectionMaker());
-  }
-
-  @Bean
-  public ConnectionMaker countingConnectionMaker(){
-    return new CountingConnectionMaker(connectionMaker());
+    return new UserDao(connectionMaker());  //모든 오브젝트는 connectionMaker에서 만들어지는 Object를 Di 받는다.
   }
 
   @Bean
   public ConnectionMaker connectionMaker(){
+    //CountingConnectionMaker를 리턴받도록 수정.
+    return new CountingConnectionMaker(mysqlConnectionMaker());
+  }
+
+  @Bean
+  public ConnectionMaker mysqlConnectionMaker(){
     return new MysqlConnectionMaker();
   }
 
