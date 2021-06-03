@@ -151,59 +151,59 @@ public class UserDao {
 
 
 > 추상 클래스로 정의한 UserDao
-> ```java  
-public abstract class UserDao {
-
+ ```java  
+public abstract class UserDao {    
+    
 /** DB 저장 결과 */  public void add(User user) throws ClassNotFoundException, SQLException {    
-Connection c = getConnection();
-
-// SQL을 담은 PreparedStatement를 가져온다.    
-PreparedStatement ps = c.prepareStatement(    
-"insert into users(id, name, password) value(?,?,?)"    
-);
-
-ps.setString(1, user.getId());    
-ps.setString(2,user.getName());    
-ps.setString(3, user.getPassword());
-
-ps.executeUpdate();
-
-ps.close();    
-c.close();    
-}
-
+        Connection c = getConnection();    
+    
+  // SQL을 담은 PreparedStatement를 가져온다.    
+  PreparedStatement ps = c.prepareStatement(    
+                "insert into users(id, name, password) value(?,?,?)"    
+  );    
+    
+  ps.setString(1, user.getId());    
+  ps.setString(2,user.getName());    
+  ps.setString(3, user.getPassword());    
+    
+  ps.executeUpdate();    
+    
+  ps.close();    
+  c.close();    
+  }    
+    
 /** 조회 실행 결과 */  public User get(String id) throws ClassNotFoundException, SQLException {    
-Connection c = getConnection();
-
-PreparedStatement ps = c.prepareStatement(    
-"select * from users where id=?"  );
-
-ps.setString(1,id);
-
-ResultSet rs = ps.executeQuery();    
-rs.next();
-
-User user = new User();    
-user.setId(rs.getString("id"));    
-user.setName(rs.getString("name"));    
-user.setPassword(rs.getString("password"));
-
-rs.close();    
-ps.close();    
-c.close();
-
-return user;    
-}
-
-/** ch1.1.2 중복된 코드를 private 메서드로 변환
-*  ch-1.2.3 추상메스드로 변경
-* */    
-  public abstract Connection getConnection() throws ClassNotFoundException, SQLException; }
+        Connection c = getConnection();    
+    
+  PreparedStatement ps = c.prepareStatement(    
+                "select * from users where id=?"  );    
+    
+  ps.setString(1,id);    
+    
+  ResultSet rs = ps.executeQuery();    
+  rs.next();    
+    
+  User user = new User();    
+  user.setId(rs.getString("id"));    
+  user.setName(rs.getString("name"));    
+  user.setPassword(rs.getString("password"));    
+    
+  rs.close();    
+  ps.close();    
+  c.close();    
+    
+ return user;    
+  }    
+    
+/** ch1.1.2 중복된 코드를 private 메서드로 변환    
+*  ch-1.2.3 추상메스드로 변경    
+  * */    
+public abstract Connection getConnection() throws ClassNotFoundException, SQLException; }  
 ```  
-  
-> N사에서는 MySQL을 사용한다고 가정합니다.  
->  * NUserDao는 UserDao를 상속하고, connection부분을 Mysql DB 커넥션 생성 코드로 오버라이딩합니다.  
-  
+
+> N사에서는 MySQL을 사용한다고 가정합니다.
+>  * NUserDao는 UserDao를 상속하고, connection부분을 Mysql DB 커넥션 생성 코드로 오버라이딩합니다.
+
 ```java  
 public class NUserDao extends UserDao {    
     
@@ -525,77 +525,79 @@ public class UserDao {
 
 > UserDaoTest 코드에서 MysqlConnectionMaker 구현 클래스를 만들고, 이를 UserDao에 주입합니다.
 
-> UserDao dao = new UserDao(connectionMaker); ```java  
-public class UserDaoTest {
+> UserDao dao = new UserDao(connectionMaker);
 
+```java  
+public class UserDaoTest {    
+    
     @BeforeEach    
-public void resetData() throws Exception{    
-/** 테스트를 위해서 DB Connection 관련 로직을 이렇게 사용한다.. 나중에 챕터 진행하면서 리팩토링 예정 */  Class.forName("com.mysql.cj.jdbc.Driver"); //com.mysql.jdbc.Driver -> Depericated!
-
+  public void resetData() throws Exception{    
+/** 테스트를 위해서 DB Connection 관련 로직을 이렇게 사용한다.. 나중에 챕터 진행하면서 리팩토링 예정 */  Class.forName("com.mysql.cj.jdbc.Driver"); //com.mysql.jdbc.Driver -> Depericated!    
+    
 //DB 연결을 위한 Connection을 가져온다.    
-Connection c = DriverManager.getConnection(    
-"jdbc:mysql://localhost:3307/springbook", "spring", "book"    
-);
-
+  Connection c = DriverManager.getConnection(    
+                "jdbc:mysql://localhost:3307/springbook", "spring", "book"    
+  );    
+    
 // 테스트 시작전 user 테이블을 비워준다.    
-PreparedStatement ps = c.prepareStatement(    
-"truncate users "    
-);
-
-ps.executeUpdate();
-
-ps.close();    
-c.close();
-
-}
-
+  PreparedStatement ps = c.prepareStatement(    
+                "truncate users "    
+  );    
+    
+  ps.executeUpdate();    
+    
+  ps.close();    
+  c.close();    
+    
+  }    
+    
     @Test  
-@DisplayName("UserDao 테스트 코드입니다.")    
-public void userDaoTestPhase1() throws ClassNotFoundException, SQLException {
-
-
-/** ch-1.2.3 테스트 코드 수정
-*  ch-1.3.3 관계 설정 책임이 추가된 UserDao 클라이언트
-*    -> UserDaoTest는 UserDao와 ConnectionMaker 구현 클래스와의 런타임 오브젝트 의존관계를 설정하는 책임을 담당해야함.
-* */  ConnectionMaker connectionMaker = new MysqlConnectionMaker();    
-  UserDao dao = new UserDao(connectionMaker);
-
-User user = new User();    
-user.setId("whiteship");    
-user.setName("백기선");    
-user.setPassword("married");
-
-dao.add(user);
-
-System.out.println(user.getId()+"등록 성공");
-
-User user2 = dao.get(user.getId());    
-System.out.println(user2.getName());    
-System.out.println(user2.getPassword());
-
-System.out.println(user2.getId() + "조회 성공!");    
-} }
+ @DisplayName("UserDao 테스트 코드입니다.")    
+  public void userDaoTestPhase1() throws ClassNotFoundException, SQLException {    
+    
+    
+/** ch-1.2.3 테스트 코드 수정    
+*  ch-1.3.3 관계 설정 책임이 추가된 UserDao 클라이언트    
+  *    -> UserDaoTest는 UserDao와 ConnectionMaker 구현 클래스와의 런타임 오브젝트 의존관계를 설정하는 책임을 담당해야함.    
+ * */  ConnectionMaker connectionMaker = new MysqlConnectionMaker();    
+  UserDao dao = new UserDao(connectionMaker);    
+    
+  User user = new User();    
+  user.setId("whiteship");    
+  user.setName("백기선");    
+  user.setPassword("married");    
+    
+  dao.add(user);    
+    
+  System.out.println(user.getId()+"등록 성공");    
+    
+  User user2 = dao.get(user.getId());    
+  System.out.println(user2.getName());    
+  System.out.println(user2.getPassword());    
+    
+  System.out.println(user2.getId() + "조회 성공!");    
+} }  
 ```  
-  
-* 여기까지 오면서 책에서는 아래와 같은 **객체 지향 기술 개념**을 다시 한번 더 설명합니다.  
-   * 이런 개념은 스프링을 떠나서, 프로그래밍 설계나 구현에 관점에서 시사하는 바가 크기 때문에...  
-   * 본 책에서 소개된 개념에 대해 다른 도서나 매체에서 설명된 내용을 공부하고 다시 정리하겠습니다.  
-  
-> * **개방 폐쇄의 원칙(OCP, Open-Closed Principle)**  
-> * **객체지향 설계의 원칙(SOLID)**  
-> * **높은 응집도, 낮은 결합도(high coherence, low coupling)**  
-> * **전략 패턴(Strategy Pattern)**  
+
+* 여기까지 오면서 책에서는 아래와 같은 **객체 지향 기술 개념**을 다시 한번 더 설명합니다.
+    * 이런 개념은 스프링을 떠나서, 프로그래밍 설계나 구현에 관점에서 시사하는 바가 크기 때문에...
+    * 본 책에서 소개된 개념에 대해 다른 도서나 매체에서 설명된 내용을 공부하고 다시 정리하겠습니다.
+
+> * **개방 폐쇄의 원칙(OCP, Open-Closed Principle)**
+> * **객체지향 설계의 원칙(SOLID)**
+> * **높은 응집도, 낮은 결합도(high coherence, low coupling)**
+> * **전략 패턴(Strategy Pattern)**
   
 ---  
-  
-### 1.4 제어의 역전  
-  
-* 오브젝트를 사용하는 쪽의 역할과 책임을 좀 더 깔끔하게 분리해봅시다.  
-  
-* 팩토리 오브젝트 : 객체의 생성 방법을 결정하고 그렇게 만들어진 오브젝트를 리턴하는 방식의 오브젝트 입니다.  
-  
+
+### 1.4 제어의 역전
+
+* 오브젝트를 사용하는 쪽의 역할과 책임을 좀 더 깔끔하게 분리해봅시다.
+
+* 팩토리 오브젝트 : 객체의 생성 방법을 결정하고 그렇게 만들어진 오브젝트를 리턴하는 방식의 오브젝트 입니다.
+
 > UserDao의 생성 책임을 맡은 팩토리 클래스  
-> UserDao 타입 오브젝트를 어떻게 만들고, 어떻게 초기화 시킬지 등을 결정합니다.  
+> UserDao 타입 오브젝트를 어떻게 만들고, 어떻게 초기화 시킬지 등을 결정합니다.
 ```java  
 public class DaoFactory {    
     
@@ -703,58 +705,60 @@ public class DaoFactory {
 ```  
 
 > ApplicationContext를 적용한 UserDaoTest 코드 입니다.
-> ```java  
-@Test @DisplayName("UserDao 테스트 코드 입니다.") public void userDaoTestPhase1() throws ClassNotFoundException, SQLException {
+```java  
 
+@Test 
+@DisplayName("UserDao 테스트 코드 입니다.") 
+public void userDaoTestPhase1() throws ClassNotFoundException, SQLException {    
+    
     /* ApplicationContext를 지정하는게 사실상 의미가 있을지 모르지만....*/    
-ApplicationContext context = new AnnotationConfigApplicationContext(DaoFactory.class);    
-UserDao dao = context.getBean("userDao", UserDao.class); //userDao라는 빈을 가져온다.
+  ApplicationContext context = new AnnotationConfigApplicationContext(DaoFactory.class);    
+  UserDao dao = context.getBean("userDao", UserDao.class); //userDao라는 빈을 가져온다.    
+    
+    
+    
+  User user = new User();    
+  user.setId("whiteship");    
+  user.setName("백기선");    
+  user.setPassword("married");    
+    
+  dao.add(user);    
+    
+  System.out.println(user.getId()+"등록 성공");    
+    
+  User user2 = dao.get(user.getId());    
+  System.out.println(user2.getName());    
+  System.out.println(user2.getPassword());    
+    
+  System.out.println(user2.getId() + "조회 성공!"); }  
+```
+
+* **DaoFactory  예제를 통해 애플리케이션 컨텍스트의 동작 방식**
+* ApplicationContext는 DaoFactory 클래스를 설정 정보로 등록(@Configuration)
+    * @Bean이 붙은 메서드들을 가져와서 Bean 목록에 등록시켜놓는다.
+    * 클라이언트는 ApplicationContext에서 필요한 UserDao를 요청한다.(UserDao dao = context.getBean("userDao", UserDao.class);)
+    * ApplicationContext에서는DaoFactory의 빈을 생성하는 메서드를 호출하여 UserDao를 받고 Client에 돌려준다.
 
 
+* **스프링의 ApplicationContext를 이용하여 얻을 수 있는 이점?**
+* 오브젝트 팩토리(DaoFacotry)가 많아져도 이를 알거나 직접 사용할 필요가 없이 일관된 방식으로 오브젝트 생성이 가능
+* 오브젝트의 라이프사이클을 프로그래머가 아닌 ApplicationContext에서 관리
+* 빈 제공을 위한 다양한 방식 제공.
 
-User user = new User();    
-user.setId("whiteship");    
-user.setName("백기선");    
-user.setPassword("married");
+### 1.6 싱글톤 레지스트리와 오브젝트 스코프
 
-dao.add(user);
+* context.getBean()으로 가져오는 스프링 빈은 매번 동일한 오브젝트를 돌려줍니다(오브젝트 해시가 동일)
+* 스프링은 기본적으로 빈 오브젝트를 "싱글톤(Singlton)"으로 만들기 때문입니다.
 
-System.out.println(user.getId()+"등록 성공");
-
-User user2 = dao.get(user.getId());    
-System.out.println(user2.getName());    
-System.out.println(user2.getPassword());
-
-System.out.println(user2.getId() + "조회 성공!"); }
-
-```  
-  
-* **DaoFactory  예제를 통해 애플리케이션 컨텍스트의 동작 방식**  
- * ApplicationContext는 DaoFactory 클래스를 설정 정보로 등록(@Configuration)  
-   * @Bean이 붙은 메서드들을 가져와서 Bean 목록에 등록시켜놓는다.  
-   * 클라이언트는 ApplicationContext에서 필요한 UserDao를 요청한다.(UserDao dao = context.getBean("userDao", UserDao.class);)  
-   * ApplicationContext에서는DaoFactory의 빈을 생성하는 메서드를 호출하여 UserDao를 받고 Client에 돌려준다.  
-  
-  
-* **스프링의 ApplicationContext를 이용하여 얻을 수 있는 이점?**  
- * 오브젝트 팩토리(DaoFacotry)가 많아져도 이를 알거나 직접 사용할 필요가 없이 일관된 방식으로 오브젝트 생성이 가능  
-  * 오브젝트의 라이프사이클을 프로그래머가 아닌 ApplicationContext에서 관리  
-  * 빈 제공을 위한 다양한 방식 제공.  
-  
-### 1.6 싱글톤 레지스트리와 오브젝트 스코프  
-  
-* context.getBean()으로 가져오는 스프링 빈은 매번 동일한 오브젝트를 돌려줍니다(오브젝트 해시가 동일)  
-* 스프링은 기본적으로 빈 오브젝트를 "싱글톤(Singlton)"으로 만들기 때문입니다.  
-  
 > Singleton  
-> 애플리케이션 내에서 단 하나의 인스턴스만 강제하는 패턴입니다.  
-  
-* 스프링에서의 싱글턴은 일반적인 자바 디자잍 패턴의 싱글턴 클래스와 결이 다릅니다.  
-* 스프링에서는 싱글턴 형태의 오브젝트를 만들고 관리하는 기능의 "싱글턴 레지스트리(Singleton Registry)"를 제공합니다.  
-* 여기서 주의가 필요한 점은, 멀티 스레드 환경에서 싱글톤 인스턴스의 "공유 자원"을 조심해야 합니다.  
-   * 메서드 내부가 아닌, 클래스 멤버 변수를 수정하는 경우, 실제 멀티스레드 환경에서 의도치 않은 결과가 발생할 수 있습니다.  
-* 실제 실무에서도 문제가 되는 부분이라 이부분도 나중에 기회가 된다면 주제로 정해서 한번 정리해 봐도 될 것 같습니다.  
-  
+> 애플리케이션 내에서 단 하나의 인스턴스만 강제하는 패턴입니다.
+
+* 스프링에서의 싱글턴은 일반적인 자바 디자잍 패턴의 싱글턴 클래스와 결이 다릅니다.
+* 스프링에서는 싱글턴 형태의 오브젝트를 만들고 관리하는 기능의 "싱글턴 레지스트리(Singleton Registry)"를 제공합니다.
+* 여기서 주의가 필요한 점은, 멀티 스레드 환경에서 싱글톤 인스턴스의 "공유 자원"을 조심해야 합니다.
+    * 메서드 내부가 아닌, 클래스 멤버 변수를 수정하는 경우, 실제 멀티스레드 환경에서 의도치 않은 결과가 발생할 수 있습니다.
+* 실제 실무에서도 문제가 되는 부분이라 이부분도 나중에 기회가 된다면 주제로 정해서 한번 정리해 봐도 될 것 같습니다.
+
 ```java  
 public class UserDao{  
  private final ConnectionMaker connectionMaker; // 초기 설정하면 사용중에는 바뀌지 않는 인스턴스 변수  
@@ -987,7 +991,7 @@ public class UserDao {
 ___
 
 
-###  Appendix : chapter 1 더 알아보기
+##  Appendix : chapter 1 더 알아보기
 
 * 저는 본 예제를 진행하면서 SpringBoot 프로젝트로 예제를 작성할 예정입니다.(5/30 기준으로 2.5.0 version을 사용하네요..)
 
@@ -997,11 +1001,11 @@ ___
 
 
 
-#### A1. Springboot
+### A1. Springboot
 ![img](https://user-images.githubusercontent.com/55119239/74508917-976b0d80-4f43-11ea-9c97-f479de176bf3.png)
 
 
-##### A1.1 개념
+#### A1.1 개념
 * https://spring.io/projects/spring-boot
 > Spring Boot makes it easy to create stand-alone, production-grade Spring based Applications that you can "just run".
 
@@ -1017,7 +1021,7 @@ ___
 * Docker Integration, Acuator 등등 다양한 기능과 연동되어 확장이 가능한 환경을 제공합니다.
 
 
-##### A1.2 Spring Boot 설정
+#### A1.2 Spring Boot 설정
 * @SpringbootApplication 어노테이션은 Spring Web Application에 필요한 다양한 설정 정보들을 자동화 해줍니다.
 * 아래는 Spring initializr로 Web Application 프로젝트를 생성시 자동으로 생성되는 Main App class 입니다.
 ```java
@@ -1056,7 +1060,7 @@ public @interface SpringBootApplication {
 * https://donghyeon.dev/spring/2020/08/01/%EC%8A%A4%ED%94%84%EB%A7%81%EB%B6%80%ED%8A%B8%EC%9D%98-AutoConfiguration%EC%9D%98-%EC%9B%90%EB%A6%AC-%EB%B0%8F-%EB%A7%8C%EB%93%A4%EC%96%B4-%EB%B3%B4%EA%B8%B0/
   *http://dveamer.github.io/backend/SpringBootAutoConfiguration.html#@SpringBootApplication
 
-##### A1.3 SpringBoot에서 Bean 설정 관리
+#### A1.3 SpringBoot에서 Bean 설정 관리
 
 **A1.3.1 등록**
 * Springboot에서 Bean은 두가지 방식으로 등록이 가능합니다.
@@ -1108,3 +1112,137 @@ public class HelloService{
 * 빈이 여러개라면 @Primary 어노테이션으로 우선순위(기본 디폴트)로 지정할 수 있습니다.
 * @Qualifer("빈명칭")을 통해서 ApplicationContext에 등록된  Bean중에 내가 사용하고자 하는 빈을 사용할 수 도 있습니다.
 * ApplicationContext에서 getBean()으로 직접 꺼내도 됩니다.
+
+---
+
+### A2. 의존성 주입(DI)에 대한 보충 설명.
+> 출처 : 스프링 인 액션(4th Edition)
+
+* 『스프링 인 액션(4th Edition)』에서는 DI의 필요성과 그 개념을 "기사(knight)와 임무(Quest)"의 비유를 들어 흥미롭게 설명하는 부분이 있습니다.
+
+#### A2.1.1 종속객체 주입의 필요성
+
+소녀를 구하는 기사(DamselRescuingKnight)가 직접 구출 임무(Quest)를 부여하는 클래스 입니다.
+```java
+public class DamselRescuingKnight implements Knight {
+	private RescueDamselQuest quest;	//기사가 해야되는 퀘스트
+	
+	public DamselRescuingKnight() {
+		//기사가 직접 퀘스트를 만든다.
+		this.quest = new RescueDamselQuest();
+	}
+	
+	public void embarkOnQuest() {
+		quest.embark();
+	}
+}
+```
+
+* DamselRescuingKnight가 RescueDamselQuest에 강하게 결합이되어 있습니다
+    * 객체의 강결합은 RescueDamselQuest(공주를 구하는 퀘스트)의 변화에 DamselRescuingKnight(공주를 구하는 기사)에 영향을 받는다는 의미입니다.
+
+* 의존 객체의 강결합으로 인해 책에서는 두 가지 대표적인 문제를 지적합니다.
+    * RescueDamselQuest가 아닌 다른 Quest가 필요한 경우, 기사의 행위(퀘스트를 수행한다)에 변화가 없음에도 소스 수정이 불가피 합니다.
+    * 결합도가 높은 코드는 **테스트와 재활용에 어렵고, 사이드 이펙트**가 빈번한 경향이 있습니다.
+
+* 책에서는 **DI**를 이용하여 객체 생성 시점에 객체 외부에서 생성되는 객체가 필요한 의존성을 주입하는 개념이 필요하다고 말합니다.
+
+
+>  Quest라는 인터페이스를 생성자로 주입받는 BraveKnight
+```java
+public class BraveKnight implement Knight {
+	private Quest quest;	//인터페이스 타입입니다.
+	public BraveKnight(Quest quest) {
+		this.quest = quest;	//Knight 외부로 부터 Quest를 받습니다.
+	}
+	
+	public void embarkOnQuest(){
+		quest.embark();
+	}
+}
+```
+
+* BraveKnight는 특정 Quest 구현체에 결합이 되지 않아 이전 소스에 비해 느슨한 결합도를 가지게 됩니다.
+    * Quest구현체에 따라 BraveKnight는 "공주를 구하는 미션(RescueQuest)', "용을 처치하는 미션(SlayDragonQuest)" 등등 다양한 퀘스트를 수행할 수 있게 됩니다.
+    * 종속 객체를 바꿀수 있게 되면서 **모의 테스트(Mocking)**에 용의해집니다.
+
+> Mockito 라이브러리를 사용한 BraveKnight의 모의 테스트
+```java
+public class BraveKnightTest {
+	@Test
+	public void knightShouldEmbarkOnQuest() {
+		Quest mockQuest = mock(Quest.class);
+		BraveKnight knight = new BraveKnight(mockQuest);	//모의 퀘스트 주입
+		knight.embarkOnQuest();
+		/*embarkOnQuest()메서드를 호출 한 후, Quest의 embark()메서드가 정확히 1번 호출이 되었는지 확인하는 코드 라인*/
+		verify(mockQuest, times(1)).embark();
+	}
+}
+```
+
+
+---
+
+### A3. Spring Container와 Bean
+> 출처 : 스프링 인 액션(4th Edition)
+
+#### A3.1 스프링 컨테이너에 대한 개념
+
+* Spring기반 애플리케이션에서는 **스프링 컨테이너(Spring Container)** 안에서 객체의 생명주기가 관리가 됩니다.
+
+* 아래의 그림은 스프링 컨테이너 안에서 객체가 관계를 맺고 관되는 그림을 단순화 해서 표현한 예시 입니다.
+
+![](https://miro.medium.com/max/785/1*PIFheZ8h8OO_hss9PETXIw.png)
+> 이미지 출처 : https://medium.com/lifeinhurry/what-is-spring-container-spring-core-9f6755966fe9
+
+* 스프링에는 여러 컨테이너 구현체가 존재하고, 크게 두가지로 분류가 가능합니다.
+    1)	 **빈 팩토리(Bean Factory)** : DI에 대한 기본적인 지원을 제공하는 단순한 컨테이너 입니다.
+    2) **애플리케이션 컨텍스트(org.springframework.context.ApplicationContext 인터페이스에 의해 정의)** : 빈 팩토리를 확장(extends?)하여 프로퍼티 텍스트를 읽고 애플리케이션 프레임워크 서비스를 제공하는 컨테이너 입니다.
+
+#### A3.2 어플리케이션 컨텍스트의 종류
+
+
+책에서 자주 접할 수 있는 몇가지 어플리케이션 컨텍스트 종류를 열거 합니다.
+
+* AnnotationConfigApplicationContext : 하나 이상의 자바 기반 설정 클래스에서 스프링 애플리케이션 컨텍스트를 로드
+* AnnotationConfigWebApplicationContext: 하나 이상의 자바 기반 설정 클래스에서 스프링 웹 어플리케이션 컨텍스트를 로드한다.
+* ClassPathXmlApplicationContext : 클래스패스(classpath)에 위치한 XML 파일에서 컨텍스트 정의 내용을 로드한다.
+* FileSystemXmlApplicationContext: 파일 경로로 지정된 XML 파일에서 컨텍스트 정의 내용을 로드한다.
+* XmlWebApplicationContext : 웹 애플리케이션에 포함된 XML파일에서 컨텍스트 정의 내용을 로드한다.
+
+#### A3.3 빈의 일생
+
+* 일반적인 자바 어플리케이션의 생명주기는 단순합니다.
+    * new 키워드를 이용해 빈을 인스턴스화 합니다.
+    * 더이상 사용되지 않는 빈은 가비기 컬렉션 후보가 되어 사라지게 됩니다.
+
+* 스프링 컨테이너 내에서 빈의 생명주기는 정교합니다.
+
+![](https://i.stack.imgur.com/hfnfy.png)
+> 출처 : https://stackoverflow.com/questions/48670503/life-cycle-of-a-spring-bean/48689908
+
+
+1. 스프링이 빈을 인스턴스화 한다.
+2. 스프링이 값과 빈의 레퍼런스를 빈의 프로퍼티에 주입힌다.
+3. 빈이 BeanNameAware를 구현하면 스프링이 빈의 ID를 setBeanName() 메소드에 넘긴다.
+4. 빈이 BeanFactoryAware를 구현하면 setBeanFactory() 메소드를 호출하여 빈 팩토리(BeanFactory) 자체를 넘긴다.
+5. 빈이 ApplicationContextAware를 구현하면 스프링이  setApplicationContext() 메소드를 호출하고 둘러싼 애플리케이션 컨텍스트(enclosing application context)에 대한 참조를 넘긴다.
+6. 빈이 BeanPostProcessor 인터페이스를 구현하면 스프링은 postProcessBeforeInitialization() 메소드를 호출한다.
+7. 빈이 InitializingBean 인터페이스를 구현하면 스프링은 postProcessAfterInitialization() 메소드를 호출
+8. BeanPostProcessor를 구현하면 스프링은 postProcessAfterInitialization() 호출
+9. 이 상태가 되면 빈은 어플리케이션에서 사용할 준비가 된 것이며, 채플리케이션 컨텍스트가 소멸할 때까지 애플리케이션 컨텍스트에 남아 있다.
+   10.빈이 DisposableBean 인터페이스를 구현하면 스프링은 destroy() 메소드를 호출한다. 마찬가지로 빈이 destroy-method와 함께 선언됐으면 지정된 메소드가 호출된다.
+
+ ----
+### A4. Spring 3 ~ 5 까지..
+
+
+* 토비 스프링 책에서 커버하는 **Spring 버전은 3.X**
+* 스프링 인 액션(4th)에서 커버하는 **Spring버전은 4.0**
+* 대중화 되고 있는 SpringBoot 2.X 버전의 프로젝트는 **Spring 5.X** 버전
+    * 제 실무에서도 Spring5.x의 스펙을 많이 활용이 되고 있기에, 스터디 진행하면서 간단한게 관련된 기술 스택도 정리해보도록 하겠습니다.
+
+각 버전별 Spring 스펙에 대해 간략하게 살펴 볼 수 있는 블로그 추가합니다.
+
+* https://server-engineer.tistory.com/775
+* https://velog.io/@hygoogi/스프링-버전-별-특징
