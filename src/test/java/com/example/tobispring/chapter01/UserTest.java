@@ -7,7 +7,9 @@
 package com.example.tobispring.chapter01;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.test.context.ActiveProfiles;
 
+@ActiveProfiles("test")
 public class UserTest {
 
     @Test

@@ -1,0 +1,9 @@
+spring:
+  config:
+    activate:
+      on-profile: default
+  datasource:
+    url: jdbc:mysql://localhost:3307/springbook
+    username: spring
+    password: book
+    driver-class-name: com.mysql.cj.jdbc.Driver

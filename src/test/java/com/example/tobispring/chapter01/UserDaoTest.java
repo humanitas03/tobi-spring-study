@@ -6,68 +6,73 @@
  */
 package com.example.tobispring.chapter01;
 
-import org.junit.jupiter.api.BeforeEach;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
+@SpringBootTest
+@ActiveProfiles("test")
 public class UserDaoTest {
 
-    @BeforeEach
-    public void resetData() throws Exception{
-        /** 테스트를 위해서 DB Connection 관련 로직을 이렇게 사용한다.. 나중에 챕터 진행하면서 리팩토링 예정 */
-        Class.forName("com.mysql.cj.jdbc.Driver");  //com.mysql.jdbc.Driver -> Depericated!
-
-        //DB 연결을 위한 Connection을 가져온다.
-        Connection c = DriverManager.getConnection(
-                "jdbc:mysql://localhost:3307/springbook", "spring", "book"
-        );
-
-        // 테스트 시작전 user 테이블을 비워준다.
-        PreparedStatement ps = c.prepareStatement(
-                "truncate users "
-        );
-
-        ps.executeUpdate();
-
-        ps.close();
-        c.close();
-
-    }
+    @Autowired
+    private UserDao userDao;
 
     @Test
     @DisplayName("UserDao 테스트 코드 입니다.")
-    public void userDaoTestPhase1() throws ClassNotFoundException, SQLException {
-
-        /* ApplicationContext를 지정하는게 사실상 의미가 있을지 모르지만....*/
-        ApplicationContext context = new AnnotationConfigApplicationContext(DaoFactory.class);
-        UserDao dao = context.getBean("userDao", UserDao.class);    //userDao라는 빈을 가져온다.
-
+    @Disabled
+    public void userDaoTestPhase1() throws SQLException {
 
         User user = new User();
         user.setId("whiteship");
         user.setName("백기선");
         user.setPassword("married");
 
-        dao.add(user);
+        this.userDao.add(user);
 
         System.out.println(user.getId()+"등록 성공");
 
-        User user2 = dao.get(user.getId());
+        User user2 = this.userDao.get(user.getId());
         System.out.println(user2.getName());
         System.out.println(user2.getPassword());
 
         System.out.println(user2.getId() + "조회 성공!");
-
-        //DAO 사용 후 Connection 카운트 조회 로직.
-        CountingConnectionMaker ccm = context.getBean("countingConnectionMaker", CountingConnectionMaker.class);
-        System.out.println("Connection counter : " + ccm.getCounter());
     }
+
+
+    /*******************************************/
+
+    @Test
+    @DisplayName("토비책 테스트")
+    public void addAndGet() throws SQLException {
+        this.userDao.delteAll(); //모두 지운다.
+        assertEquals(0,userDao.getCount());
+
+        User user = new User();
+        user.setId("gyumee");
+        user.setName("박성철");
+        user.setPassword("springon1");
+
+        this.userDao.add(user);
+        assertEquals(1, userDao.getCount());
+
+        User user2 = this.userDao.get(user.getId());
+
+        assertAll(
+            ()->assertEquals(user.getName(), user2.getName()),
+            ()->assertEquals(user.getPassword(), user2.getPassword())
+        );
+
+    }
+
+
 
 }

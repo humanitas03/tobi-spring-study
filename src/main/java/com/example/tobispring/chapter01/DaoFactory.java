@@ -11,20 +11,34 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 
 @Configuration
 public class DaoFactory {
 
+  @Value("${spring.datasource.url}")
+  private String dataSourceUrl;
+
+  @Value("${spring.datasource.username}")
+  private String dataSourceUserName;
+
+  @Value("${spring.datasource.password}")
+  private String dataSourcePassword;
+
+  @Value("${spring.datasource.driver-class-name}")
+  private String dataSourceDriverClassName;
+
   @Bean
   public DataSource dataSource(){
-    SimpleDriverDataSource dataSource = new SimpleDriverDataSource();
+    DriverManagerDataSource dataSource = new DriverManagerDataSource();
 
     //gradle에서 runTimeOnly에서 implementation으로 변경
-    dataSource.setDriverClass(Driver.class);
-    dataSource.setUrl("jdbc:mysql://localhost:3307/springbook");
-    dataSource.setUsername("spring");
-    dataSource.setPassword("book");
+    dataSource.setDriverClassName(dataSourceDriverClassName);
+    dataSource.setUrl(dataSourceUrl);
+    dataSource.setUsername(dataSourceUserName);
+    dataSource.setPassword(dataSourcePassword);
+
     return dataSource;
   }
 
@@ -35,17 +49,5 @@ public class DaoFactory {
     userDao.setDataSource(dataSource());
     return userDao;
   }
-
-  @Bean
-  public ConnectionMaker countingConnectionMaker(){
-    return new CountingConnectionMaker(connectionMaker());
-  }
-
-  @Bean
-  public ConnectionMaker connectionMaker(){
-    return new MysqlConnectionMaker();
-  }
-
-
 
 }

@@ -20,12 +20,13 @@ public class UserDao {
     /** DB 저장 결과
      * ch-1.3.1 독립된 SimpleConnectionMaker를 주입받아 커넥션 실행
      * */
-    public void add(User user) throws ClassNotFoundException, SQLException {
+    public void add(User user) throws SQLException {
         Connection c = dataSource.getConnection();
 
         // SQL을 담은 PreparedStatement를 가져온다.
         PreparedStatement ps = c.prepareStatement(
-                "insert into users(id, name, password) value(?,?,?)"
+                "insert into users values(?,?,?)" //h2 Query
+//            "insert into users('id','name',password') value(?,?,?)" //Mysql Query
         );
 
         ps.setString(1, user.getId());
@@ -41,7 +42,7 @@ public class UserDao {
     /** 조회 실행 결과
      * ch-1.3.1 독립된 SimpleConnectionMaker를 주입받아 커넥션 실행
      * */
-    public User get(String id) throws ClassNotFoundException, SQLException {
+    public User get(String id) throws SQLException {
         Connection c = dataSource.getConnection();
 
         PreparedStatement ps = c.prepareStatement(
@@ -63,6 +64,33 @@ public class UserDao {
         c.close();
 
         return user;
+    }
+
+    public void delteAll() throws SQLException {
+        Connection c = dataSource.getConnection();
+
+        PreparedStatement ps = c.prepareStatement("delete from users");
+
+        ps.executeUpdate();
+
+        ps.close();
+        c.close();
+    }
+
+    public int getCount() throws SQLException {
+        Connection c = dataSource.getConnection();
+
+        PreparedStatement ps = c.prepareStatement("select count(*) from users");
+
+        ResultSet rs = ps.executeQuery();
+        rs.next();
+        int count = rs.getInt(1);
+
+        rs.close();
+        ps.close();
+        c.close();
+
+        return count;
     }
 
     public void setDataSource(DataSource dataSource){
