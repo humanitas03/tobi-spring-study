@@ -77,7 +77,10 @@ public class UserDao {
             c = dataSource.getConnection();
 
             // 변하는 부분을 메서드로 추출
-            ps = makeStatement(c);
+           /*전략 패턴을 따라 DeleteAllStatemet가 적용*/
+            StatementStrategy strategy = new DeleteAllStatement();
+            ps = strategy.makePreparedStatement(c);
+
             ps.executeUpdate();
         } catch (SQLException e) {
             throw e;
@@ -146,14 +149,11 @@ public class UserDao {
         }
     }
 
-    /** chapter 3.1.2 변하는 부분을 메서드로 추출*/
-    private PreparedStatement makeStatement(Connection c)  throws SQLException {
-        PreparedStatement ps;
-        ps =c.prepareStatement("delete from users");
-        return ps;
-    }
+
 
     public void setDataSource(DataSource dataSource){
         this.dataSource = dataSource;
     }
+
+
 }
