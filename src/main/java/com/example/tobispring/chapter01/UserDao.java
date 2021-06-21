@@ -8,6 +8,8 @@ package com.example.tobispring.chapter01;
 
 import java.sql.*;
 import javax.sql.DataSource;
+import javax.xml.transform.Result;
+
 /** Chapter 1. UserDaO
  *  -
  */
@@ -67,30 +69,79 @@ public class UserDao {
     }
 
     public void delteAll() throws SQLException {
-        Connection c = dataSource.getConnection();
+        Connection c = null;
+        PreparedStatement ps = null;
 
-        PreparedStatement ps = c.prepareStatement("delete from users");
+        /** p.211 JDBC API를 이용한 DAO 예외처리 */
+        try{
+            c = dataSource.getConnection();
+            ps = c.prepareStatement("delete from users");
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw e;
+        } finally {
+            if(ps !=null) {
+                try {
+                    ps.close();
+                } catch (SQLException e) {
 
-        ps.executeUpdate();
+                }
+            }
+            if(c!=null) {
+                try {
+                    c.close();
+                } catch(SQLException e) {
+
+                }
+            }
+        }
 
         ps.close();
         c.close();
     }
 
     public int getCount() throws SQLException {
-        Connection c = dataSource.getConnection();
+        Connection c = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
 
-        PreparedStatement ps = c.prepareStatement("select count(*) from users");
+        try {
+            c = dataSource.getConnection();
+            ps = c.prepareStatement("select count(*) from users");
 
-        ResultSet rs = ps.executeQuery();
-        rs.next();
-        int count = rs.getInt(1);
+            rs = ps.executeQuery();
+            rs.next();
+            return rs.getInt(1);
+        } catch(SQLException e) {
+            throw e;
+        } finally {
+            // ResultSet을 Close한다.
+            if(rs !=null) {
+                try {
+                    rs.close();
+                } catch (SQLException e) {
+                    //ResultSet에 대한 SQL Exception 발생
+                    //할 수 있는건 없다.
+                }
+            }
 
-        rs.close();
-        ps.close();
-        c.close();
-
-        return count;
+            if(ps != null) {
+                try {
+                    ps.close();
+                } catch (SQLException e) {
+                    //PreparedStatement에 대한 Exception 발생
+                    //할 수 있는건 없다.
+                }
+            }
+            if(c!=null) {
+                try {
+                    c.close();
+                } catch (SQLException e) {
+                    //DB Connection에 대한 Exception 발생
+                    //할 수 있는건 없다.
+                }
+            }
+        }
     }
 
     public void setDataSource(DataSource dataSource){
