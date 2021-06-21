@@ -75,7 +75,9 @@ public class UserDao {
         /** p.211 JDBC API를 이용한 DAO 예외처리 */
         try{
             c = dataSource.getConnection();
-            ps = c.prepareStatement("delete from users");
+
+            // 변하는 부분을 메서드로 추출
+            ps = makeStatement(c);
             ps.executeUpdate();
         } catch (SQLException e) {
             throw e;
@@ -142,6 +144,13 @@ public class UserDao {
                 }
             }
         }
+    }
+
+    /** chapter 3.1.2 변하는 부분을 메서드로 추출*/
+    private PreparedStatement makeStatement(Connection c)  throws SQLException {
+        PreparedStatement ps;
+        ps =c.prepareStatement("delete from users");
+        return ps;
     }
 
     public void setDataSource(DataSource dataSource){
