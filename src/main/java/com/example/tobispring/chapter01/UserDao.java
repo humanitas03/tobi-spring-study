@@ -68,41 +68,10 @@ public class UserDao {
         return user;
     }
 
+    /** ch.3.2.2 클라이언트 책임을 담당할 deleteAll()메서드*/
     public void delteAll() throws SQLException {
-        Connection c = null;
-        PreparedStatement ps = null;
-
-        /** p.211 JDBC API를 이용한 DAO 예외처리 */
-        try{
-            c = dataSource.getConnection();
-
-            // 변하는 부분을 메서드로 추출
-           /*전략 패턴을 따라 DeleteAllStatemet가 적용*/
-            StatementStrategy strategy = new DeleteAllStatement();
-            ps = strategy.makePreparedStatement(c);
-
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            throw e;
-        } finally {
-            if(ps !=null) {
-                try {
-                    ps.close();
-                } catch (SQLException e) {
-
-                }
-            }
-            if(c!=null) {
-                try {
-                    c.close();
-                } catch(SQLException e) {
-
-                }
-            }
-        }
-
-        ps.close();
-        c.close();
+        StatementStrategy st = new DeleteAllStatement();
+        jdbcContextWithStatementStrategy(st);
     }
 
     public int getCount() throws SQLException {
@@ -149,7 +118,37 @@ public class UserDao {
         }
     }
 
+    /** 3.2.2. 메서드로 분리한  try catch finall*/
+    public void jdbcContextWithStatementStrategy(StatementStrategy stmt) throws SQLException {
+        Connection c = null;
+        PreparedStatement ps = null;
 
+        try {
+            c = dataSource.getConnection();
+
+            ps = stmt.makePreparedStatement(c);
+
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw e;
+        } finally {
+            if(ps!=null) {
+                try {
+                    ps.close();
+                } catch (SQLException e) {
+
+                }
+            }
+
+            if(c!=null) {
+                try {
+                    c.close();
+            } catch (SQLException e){
+
+                }
+            }
+        }
+    }
 
     public void setDataSource(DataSource dataSource){
         this.dataSource = dataSource;
