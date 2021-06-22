@@ -24,19 +24,18 @@ public class UserDao {
      * ch-3.3.1 user정보를 AddStatement에 전달.
      * */
     public void add(User user) throws SQLException {
-        /* 익명 내부 클래스 */
-        jdbcContextWithStatementStrategy(new StatementStrategy() {
-            @Override
-            public PreparedStatement makePreparedStatement(Connection c) throws SQLException {
-                PreparedStatement ps = c.prepareStatement("insert into users(id, name, password)"
-                    + "values(?,?,?)");
+        /* 익명 클래스 표현을 람다 표현식으로 변환
+        *  코드가 간결해졌다.
+        * */
+        jdbcContextWithStatementStrategy(c -> {
+            PreparedStatement ps = c.prepareStatement("insert into users(id, name, password)"
+                + "values(?,?,?)");
 
-                ps.setString(1,user.getId());
-                ps.setString(2, user.getName());
-                ps.setString(3,user.getPassword());
+            ps.setString(1,user.getId());
+            ps.setString(2, user.getName());
+            ps.setString(3,user.getPassword());
 
-                return ps;
-            }
+            return ps;
         });
     }
 
