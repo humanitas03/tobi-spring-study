@@ -11,12 +11,12 @@ import java.nio.Buffer;
 
 public class Calculator {
   /*Line 콜백을 사용하는 템플릿*/
-  public Integer lineReadTemplate(String filepath, LineCallBack lineCallBack, int initVal) throws IOException {
+  public <T> T lineReadTemplate(String filepath, LineCallBack<T> lineCallBack, T initVal) throws IOException {
     BufferedReader br = null;
 
     try {
       br = new BufferedReader(new FileReader(filepath));
-      Integer res = initVal;
+      T res = initVal;
       String line = null;
       while ((line = br.readLine()) != null) {
         res = lineCallBack.doSomethingWtihLine(line, res);
@@ -41,13 +41,18 @@ public class Calculator {
   /** 템플릿 콜백을 적용한 calcSum()메서드 */
   public Integer calcSum(String filepath) throws IOException {
     System.out.println("file path : "+ filepath);
-    LineCallBack sumCallBack = (line, value) -> value + Integer.valueOf(line);
+    LineCallBack<Integer> sumCallBack = (line, value) -> value + Integer.valueOf(line);
     return lineReadTemplate(filepath, sumCallBack, 0);
   }
 
   /** 곱을 계산하는 콜백을 가진 caclMultiply() 메소드 */
   public Integer calcMultiply(String filePath) throws IOException {
-   LineCallBack multiplyCallBack = (line, value) -> value * Integer.valueOf(line);
+   LineCallBack<Integer> multiplyCallBack = (line, value) -> value * Integer.valueOf(line);
    return lineReadTemplate(filePath, multiplyCallBack, 1);
+  }
+
+  public String concatenate(String filepath) throws IOException {
+    LineCallBack<String> concatenateCallback = (line, value) -> value + line;
+    return lineReadTemplate(filepath, concatenateCallback, "");
   }
 }

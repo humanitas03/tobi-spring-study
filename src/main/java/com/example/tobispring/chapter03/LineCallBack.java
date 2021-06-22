@@ -4,6 +4,6 @@
  */
 package com.example.tobispring.chapter03;
 
-public interface LineCallBack {
-  Integer doSomethingWtihLine(String line, Integer value);
+public interface LineCallBack<T> {
+  T doSomethingWtihLine(String line, T value);
 }
