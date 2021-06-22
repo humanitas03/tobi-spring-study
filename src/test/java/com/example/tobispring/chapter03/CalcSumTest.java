@@ -7,14 +7,28 @@ package com.example.tobispring.chapter03;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+/** 새로운 테스트 메소드를 추가한 CalcSumTest*/
 public class CalcSumTest {
+
+  Calculator calculator;
+  String numFilePath;
+
+  @BeforeEach
+  public void setUp() {
+    this.calculator = new Calculator();
+    this.numFilePath = "src/main/resources/numbers.txt";
+  }
 
   @Test
   public void sumOfNumbers() throws IOException {
-    Calculator calculator = new Calculator();
-    int sum = calculator.calcSum("src/main/resources/numbers.txt");
-    assertEquals(10, sum);
+    assertEquals(10, calculator.calcSum(this.numFilePath));
+  }
+
+  @Test
+  public void multiplyNumbers() throws IOException {
+    assertEquals(24, calculator.calcMultiply(this.numFilePath));
   }
 }
