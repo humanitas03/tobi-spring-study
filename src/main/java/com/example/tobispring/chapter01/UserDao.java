@@ -24,31 +24,20 @@ public class UserDao {
      * ch-3.3.1 user정보를 AddStatement에 전달.
      * */
     public void add(User user) throws SQLException {
-        /*매 전략 마다 클래스를 새로 만드는 것이 번거롭다면 "로컬 클래스"를 고려가능
-        * 장점
-        * 1. 선언된 메서드에서만 유효
-        * 2. 내부 클래스이므로 자신이 선언한 곳의 정보 접근 가능.
-        * */
-        class AddStatement implements StatementStrategy {
-            User user;
-
-            public AddStatement(User user){
-                this.user = user;
-            }
+        /* 익명 내부 클래스 */
+        jdbcContextWithStatementStrategy(new StatementStrategy() {
             @Override
             public PreparedStatement makePreparedStatement(Connection c) throws SQLException {
-                PreparedStatement ps = c.prepareStatement("insert into users(id, name, password) values(?,?,?)");
+                PreparedStatement ps = c.prepareStatement("insert into users(id, name, password)"
+                    + "values(?,?,?)");
 
                 ps.setString(1,user.getId());
                 ps.setString(2, user.getName());
-                ps.setString(3, user.getPassword());
+                ps.setString(3,user.getPassword());
 
                 return ps;
             }
-        }
-
-        StatementStrategy st = new AddStatement(user);
-        jdbcContextWithStatementStrategy(st);
+        });
     }
 
     /** 조회 실행 결과
