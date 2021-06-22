@@ -155,11 +155,11 @@ public class UserDao {
     }
 
     public void setDataSource(DataSource dataSource){
-        this.dataSource = dataSource;
-    }
+        /** JdbcContext 생성과 DI 작업을 수행 */
+        this.jdbcContext = new JdbcContext();
+        this.jdbcContext.setDataSource(dataSource);
 
-    public void setJdbcContext(JdbcContext jdbcContext) {
-        this.jdbcContext = jdbcContext;
+        this.dataSource = dataSource;
     }
 
 }

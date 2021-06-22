@@ -47,17 +47,15 @@ public class DaoFactory {
   public UserDao userDao(){
     UserDao userDao = new UserDao();
     userDao.setDataSource(dataSource());
-    /*jdbcContext 주입*/
-    userDao.setJdbcContext(jdbcContext());
     return userDao;
   }
 
-  /** JdbcContext빈 등록 */
-  @Bean
-  public JdbcContext jdbcContext(){
-    JdbcContext jdbcContext = new JdbcContext();
-    jdbcContext.setDataSource(this.dataSource());
-    return jdbcContext;
-  }
+  /** JdbcContext빈 제거-DAO에서 직접 주입.*/
+//  @Bean
+//  public JdbcContext jdbcContext(){
+//    JdbcContext jdbcContext = new JdbcContext();
+//    jdbcContext.setDataSource(this.dataSource());
+//    return jdbcContext;
+//  }
 
 }
