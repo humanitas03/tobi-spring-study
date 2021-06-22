@@ -8,6 +8,7 @@ package com.example.tobispring.chapter01;
 
 import java.sql.*;
 import javax.sql.DataSource;
+import javax.xml.crypto.Data;
 import javax.xml.transform.Result;
 
 /** Chapter 1. UserDaO
@@ -15,8 +16,10 @@ import javax.xml.transform.Result;
  */
 public class UserDao {
 
-    //Datasource 인터페이스로 변경
     private DataSource dataSource;
+
+    /* JdbcContext를 DI받아서 사용하도록 만든 UserDao*/
+    private JdbcContext jdbcContext;
 
 
     /** DB 저장 결과
@@ -27,7 +30,7 @@ public class UserDao {
         /* 익명 클래스 표현을 람다 표현식으로 변환
         *  코드가 간결해졌다.
         * */
-        jdbcContextWithStatementStrategy(c -> {
+        this.jdbcContext.workWithStatementStrategy(c -> {
             PreparedStatement ps = c.prepareStatement("insert into users(id, name, password)"
                 + "values(?,?,?)");
 
@@ -68,8 +71,11 @@ public class UserDao {
 
     /** ch.3.2.2 클라이언트 책임을 담당할 deleteAll()메서드*/
     public void delteAll() throws SQLException {
-        StatementStrategy st = new DeleteAllStatement();
-        jdbcContextWithStatementStrategy(st);
+        this.jdbcContext.workWithStatementStrategy(c -> {
+            PreparedStatement ps;
+            ps =c.prepareStatement("delete from users");
+            return ps;
+        });
     }
 
     public int getCount() throws SQLException {
@@ -152,5 +158,8 @@ public class UserDao {
         this.dataSource = dataSource;
     }
 
+    public void setJdbcContext(JdbcContext jdbcContext) {
+        this.jdbcContext = jdbcContext;
+    }
 
 }
