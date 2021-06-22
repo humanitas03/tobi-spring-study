@@ -27,9 +27,6 @@ public class UserDao {
      * ch-3.3.1 user정보를 AddStatement에 전달.
      * */
     public void add(User user) throws SQLException {
-        /* 익명 클래스 표현을 람다 표현식으로 변환
-        *  코드가 간결해졌다.
-        * */
         this.jdbcContext.workWithStatementStrategy(c -> {
             PreparedStatement ps = c.prepareStatement("insert into users(id, name, password)"
                 + "values(?,?,?)");
@@ -71,11 +68,8 @@ public class UserDao {
 
     /** ch.3.2.2 클라이언트 책임을 담당할 deleteAll()메서드*/
     public void delteAll() throws SQLException {
-        this.jdbcContext.workWithStatementStrategy(c -> {
-            PreparedStatement ps;
-            ps =c.prepareStatement("delete from users");
-            return ps;
-        });
+        /** 변하지 않는 부분인 executeSQL을 분리한 deleteAll*/
+        this.jdbcContext.executeSql("delete from users");
     }
 
     public int getCount() throws SQLException {

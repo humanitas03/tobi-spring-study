@@ -16,6 +16,15 @@ public class JdbcContext {
     this.dataSource = dataSource;
   }
 
+  /** 변하지 않는 executeSql
+   *  람다 표현식 사용
+   * */
+  public void executeSql(final String query) throws SQLException {
+    workWithStatementStrategy(
+        c->c.prepareStatement(query)
+    );
+  }
+
   public void workWithStatementStrategy(StatementStrategy stmt) throws SQLException {
     Connection c = null;
     PreparedStatement ps = null;
