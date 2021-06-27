@@ -30,6 +30,12 @@ public class UserService {
   public void upgradeLevels(){
     List<User> users = userDao.getAll();
     for(User user : users){
+      /** 임의로 예외 발생을 위한 예제 코드
+       *  테스트 안할 때는 주석 처리!
+       * */
+//      if(user.getId().equals("ID_4"))
+//        throw new RuntimeException("5번째에서 예외!");
+
       if(canUpgradeLevel(user)){
         upgradeLevel(user);
       }
@@ -39,8 +45,8 @@ public class UserService {
   private boolean canUpgradeLevel(User user){
     Level currentLevel = user.getLevel();
     switch(currentLevel){
-      case BASIC: return (user.getLogin()>=50);
-      case SILVER: return (user.getRecommend()>=30);
+      case BASIC: return (user.getLogin()>=MIN_LOGOUT_FOR_SILVER);
+      case SILVER: return (user.getRecommend()>=MIN_RECCOMEND_FOR_GOLD);
       case GOLD: return false;
       default: throw new IllegalArgumentException("Unknown Level : "+ currentLevel);
     }
