@@ -8,7 +8,10 @@ package com.example.tobispring.chapter01;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.example.tobispring.chapter01.exception.DuplicateUserIdException;
+import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
@@ -17,6 +20,9 @@ import org.junit.jupiter.api.Test;
 import java.sql.SQLException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.jdbc.support.SQLErrorCodeSQLExceptionTranslator;
+import org.springframework.jdbc.support.SQLExceptionTranslator;
 import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
@@ -25,6 +31,9 @@ public class UserDaoTest {
 
     @Autowired
     private UserDao userDao;
+
+    @Autowired
+    private DataSource dataSource;
 
     @Test
     @DisplayName("UserDao 테스트 코드 입니다.")
@@ -75,9 +84,25 @@ public class UserDaoTest {
 
     @Test
     @DisplayName("getAll 테스트")
+    @Disabled
     public void getAllTest() {
         userDao.delteAll();
 
+    }
+
+    @Test
+    @DisplayName("SQL Exception 전환 기능 테스트")
+    public void sqlExceptionTranslate() {
+        userDao.delteAll();
+        User user = new User();
+        user.setPassword("123");
+        user.setId("jay");
+        user.setName("hwang");
+
+        assertThrows(DuplicateUserIdException.class, ()->{
+            userDao.add(user);
+            userDao.add(user);
+        });
     }
 
 
