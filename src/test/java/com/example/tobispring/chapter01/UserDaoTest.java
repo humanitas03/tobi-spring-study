@@ -10,6 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.example.tobispring.chapter01.enums.Level;
 import com.example.tobispring.chapter01.exception.DuplicateUserIdException;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeAll;
@@ -44,6 +45,9 @@ public class UserDaoTest {
         user.setId("whiteship");
         user.setName("백기선");
         user.setPassword("married");
+        user.setLevel(Level.BASIC);
+        user.setLogin(1);
+        user.setRecommend(0);
 
         this.userDao.add(user);
 
@@ -69,6 +73,9 @@ public class UserDaoTest {
         user.setId("gyumee");
         user.setName("박성철");
         user.setPassword("springon1");
+        user.setLevel(Level.BASIC);
+        user.setLogin(1);
+        user.setRecommend(1);
 
         this.userDao.add(user);
         assertEquals(1, userDao.getCount());
@@ -98,6 +105,9 @@ public class UserDaoTest {
         user.setPassword("123");
         user.setId("jay");
         user.setName("hwang");
+        user.setLevel(Level.BASIC);
+        user.setLogin(1);
+        user.setRecommend(0);
 
         assertThrows(DuplicateUserIdException.class, ()->{
             userDao.add(user);

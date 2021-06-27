@@ -5,6 +5,7 @@
 package com.example.tobispring.chapter01;
 
 
+import com.example.tobispring.chapter01.service.UserService;
 import com.mysql.cj.jdbc.Driver;
 import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Value;
@@ -50,12 +51,10 @@ public class DaoFactory {
     return userDao;
   }
 
-  /** JdbcContext빈 제거-DAO에서 직접 주입.*/
-//  @Bean
-//  public JdbcContext jdbcContext(){
-//    JdbcContext jdbcContext = new JdbcContext();
-//    jdbcContext.setDataSource(this.dataSource());
-//    return jdbcContext;
-//  }
-
+  @Bean
+  public UserService userService(){
+    UserService userService = new UserService();
+    userService.setUserDao(userDao());
+    return userService;
+  }
 }
