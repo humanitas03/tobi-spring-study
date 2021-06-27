@@ -73,6 +73,13 @@ public class UserDaoTest {
 
     }
 
+    @Test
+    @DisplayName("getAll 테스트")
+    public void getAllTest() {
+        userDao.delteAll();
+
+    }
+
 
 
 }
