@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
  * Boot가 뜨면서 특정한 동작을 수행할 수 있도록 합니다.
  */
 @Component
-@Profile("DISABLED")
+//@Profile("DISABLED")
 public class TransactionTestRunner implements ApplicationRunner {
 
   @Autowired
@@ -43,6 +43,7 @@ public class TransactionTestRunner implements ApplicationRunner {
     try{
       userService.upgradeLevels();
     }catch(RuntimeException e){
+      System.out.println("Exception was Thrown!!!!");
       System.out.println(e.getMessage());
     }
 

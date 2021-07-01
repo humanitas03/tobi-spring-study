@@ -12,8 +12,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
+import org.springframework.transaction.TransactionManager;
 
 @Configuration
 public class DaoFactory {
@@ -56,5 +58,11 @@ public class DaoFactory {
     UserService userService = new UserService();
     userService.setUserDao(userDao());
     return userService;
+  }
+
+  @Bean
+  public TransactionManager transactionManager(){
+    DataSourceTransactionManager transactionManager = new DataSourceTransactionManager(this.dataSource());
+    return transactionManager;
   }
 }

@@ -11,12 +11,19 @@ import java.sql.Connection;
 import java.util.List;
 import javax.sql.DataSource;
 import org.springframework.jdbc.datasource.DataSourceUtils;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 public class UserService {
   UserDao userDao;
 
-  private DataSource dataSource;
+  private PlatformTransactionManager transactionManager;
+
+  public void setTransactionManager(PlatformTransactionManager transactionManager) {
+    this.transactionManager = transactionManager;
+  }
 
 
   public static final int MIN_LOGOUT_FOR_SILVER = 50;
@@ -26,10 +33,6 @@ public class UserService {
     this.userDao = userDao;
   }
 
-  // Connection을 생성할 때 사용할 Datasource를 DI 받는다.
-  public void setDataSource(DataSource dataSource) {
-    this.dataSource = dataSource;
-  }
 
   //사용자 신규 등록 로직
   public void add(User user){
@@ -39,17 +42,17 @@ public class UserService {
     userDao.add(user);
   }
 
-  public void upgradeLevels() throws Exception{
-    TransactionSynchronizationManager.initSynchronization();; //트랜잭션 동기화 관리자를 이용해 동기화 작업을 초기화
-    Connection c = DataSourceUtils.getConnection(dataSource);
-    c.setAutoCommit(false); //Exception에 대한 처리가 필요합니다.
+  public void upgradeLevels() {
+    // JDBC 트랜잭션 추상 오브젝트 생성
+    TransactionStatus status =
+        this.transactionManager.getTransaction(new DefaultTransactionDefinition());
 
     try{
       List<User> users = userDao.getAll();
       for(User user : users){
-//        /** 임의로 예외 발생을 위한 예제 코드
-//         *  테스트 안할 때는 주석 처리!
-//         * */
+        /** 임의로 예외 발생을 위한 예제 코드
+         *  테스트 안할 때는 주석 처리!
+         * */
 //        if(user.getId().equals("ID_4"))
 //          throw new RuntimeException("5번째에서 예외!");
 
@@ -57,16 +60,11 @@ public class UserService {
           upgradeLevel(user);
         }
       }
-      c.commit(); //정상 작업을 마치면 transaction 커밋!~
+      this.transactionManager.commit(status);
     } catch (Exception e){
-      c.rollback();
+      this.transactionManager.rollback(status);
       throw e;
-    } finally {
-      DataSourceUtils.releaseConnection(c, dataSource);
-      TransactionSynchronizationManager.unbindResource(this.dataSource);
-      TransactionSynchronizationManager.clearSynchronization();
     }
-
 
   }
 

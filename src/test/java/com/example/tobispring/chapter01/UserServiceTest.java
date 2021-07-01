@@ -18,6 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.PlatformTransactionManager;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -33,7 +34,7 @@ public class UserServiceTest {
   UserDao userDao;
 
   @Autowired
-  DataSource dataSource;
+  PlatformTransactionManager transactionManager;
 
   @BeforeEach
   public void setUp(){
@@ -51,7 +52,7 @@ public class UserServiceTest {
   @Test
   public void upgradeLevels() throws Exception{
     //
-    userService.setDataSource(dataSource);
+    userService.setTransactionManager(transactionManager);
     userDao.delteAll();
 
     for(User user: users)
