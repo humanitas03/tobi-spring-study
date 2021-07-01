@@ -12,6 +12,7 @@ import com.example.tobispring.chapter01.enums.Level;
 import com.example.tobispring.chapter01.service.UserService;
 import java.util.Arrays;
 import java.util.List;
+import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,9 @@ public class UserServiceTest {
   @Autowired
   UserDao userDao;
 
+  @Autowired
+  DataSource dataSource;
+
   @BeforeEach
   public void setUp(){
     users = Arrays.asList(
@@ -40,10 +44,14 @@ public class UserServiceTest {
         new User("madnite1", "이상호", "p4", Level.SILVER, 60, MIN_RECCOMEND_FOR_GOLD),
         new User("green", "오민규", "p5", Level.GOLD, 100, Integer.MAX_VALUE)
     );
+
+
   }
 
   @Test
-  public void upgradeLevels(){
+  public void upgradeLevels() throws Exception{
+    //
+    userService.setDataSource(dataSource);
     userDao.delteAll();
 
     for(User user: users)
@@ -59,7 +67,7 @@ public class UserServiceTest {
   }
 
   private void checkLevelUpgraded(User user, boolean upgraded){
-    User userUpdate = userDao.get(user.getId());
+    User userUpdate = userDao.get(user.getId());  // UserDao는 같은 Session이 아님
     if(upgraded) {
       assertEquals(user.getLevel().nextLevel(), userUpdate.getLevel());
     }
