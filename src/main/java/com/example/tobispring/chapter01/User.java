@@ -18,6 +18,16 @@ public class User {
     private int login;
     private int recommend;
 
+    private String email;
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     public User(){
         //기존 코드와 하위 호환성을 위해 no argument 생성자
     }
@@ -29,6 +39,16 @@ public class User {
         this.level = level;
         this.login = login;
         this.recommend = recommend;
+    }
+
+    public User(String id, String name, String password, String email, Level level, int login, int recommend) {
+        this.id = id;
+        this.name = name;
+        this.password = password;
+        this.level = level;
+        this.login = login;
+        this.recommend = recommend;
+        this.email = email;
     }
 
     public int getLogin() {

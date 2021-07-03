@@ -17,6 +17,9 @@ configurations {
 
 repositories {
     mavenCentral()
+    maven {
+        url "https://mvnrepository.com/artifact/javax.mail/mail"
+    }
 }
 
 dependencies {
@@ -27,6 +30,14 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     implementation 'mysql:mysql-connector-java'
     testImplementation 'com.h2database:h2'
+
+    //The javax.mail:javax.mail-api must be included via vendor-specific implementation.
+    //
+    implementation group: 'javax.mail', name: 'mail', version: '1.4.5'
+//    implementation group: 'javax.mail', name: 'com.springsource.javax.mail', version: '1.4.5'
+    implementation group: 'org.springframework', name: 'spring-context-support', version: '5.3.8'
+
+    implementation "org.springframework.integration:spring-integration-mail:5.5.1" //https://docs.spring.io/spring-integration/docs/current/reference/html/mail.html
 }
 
 test {

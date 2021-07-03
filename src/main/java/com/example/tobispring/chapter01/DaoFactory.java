@@ -6,16 +6,18 @@ package com.example.tobispring.chapter01;
 
 
 import com.example.tobispring.chapter01.service.UserService;
-import com.mysql.cj.jdbc.Driver;
 import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
-import org.springframework.jdbc.datasource.SimpleDriverDataSource;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionException;
 import org.springframework.transaction.TransactionManager;
+import org.springframework.transaction.TransactionStatus;
 
 @Configuration
 public class DaoFactory {
@@ -57,12 +59,21 @@ public class DaoFactory {
   public UserService userService(){
     UserService userService = new UserService();
     userService.setUserDao(userDao());
+    userService.setTransactionManager(this.transactionManager());
+    userService.setMailSender(this.mailSender());
     return userService;
   }
 
   @Bean
-  public TransactionManager transactionManager(){
-    DataSourceTransactionManager transactionManager = new DataSourceTransactionManager(this.dataSource());
+  public PlatformTransactionManager transactionManager(){
+    PlatformTransactionManager transactionManager = new DataSourceTransactionManager(this.dataSource());
     return transactionManager;
+  }
+
+  @Bean
+  public JavaMailSenderImpl mailSender(){
+    JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+    mailSender.setHost("mail.server.com");
+    return mailSender;
   }
 }

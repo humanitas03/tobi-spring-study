@@ -12,13 +12,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Profile;
+import org.springframework.mail.MailSender;
 import org.springframework.stereotype.Component;
 
 /** ApplicationRunner를 이용하면,
  * Boot가 뜨면서 특정한 동작을 수행할 수 있도록 합니다.
  */
 @Component
-//@Profile("DISABLED")
+@Profile("DISABLED") //Disabled 합니다.
 public class TransactionTestRunner implements ApplicationRunner {
 
   @Autowired
@@ -27,9 +28,12 @@ public class TransactionTestRunner implements ApplicationRunner {
   @Autowired
   UserDao userDao;
 
+
   /** ApplicationRunner 인터페이스를 구현하면 run 메서드를 override 해야합니다. */
   @Override
   public void run(ApplicationArguments args) throws Exception {
+
+
     /**Upgrade 예제 */
 
     userDao.delteAll(); //초기화
