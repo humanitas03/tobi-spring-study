@@ -4,15 +4,15 @@
  */
 package com.example.tobispring.chapter01;
 
-import static com.example.tobispring.chapter01.service.UserService.MIN_LOGOUT_FOR_SILVER;
-import static com.example.tobispring.chapter01.service.UserService.MIN_RECCOMEND_FOR_GOLD;
+import static com.example.tobispring.chapter01.service.UserServiceImpl.MIN_LOGOUT_FOR_SILVER;
+import static com.example.tobispring.chapter01.service.UserServiceImpl.MIN_RECCOMEND_FOR_GOLD;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.example.tobispring.chapter01.enums.Level;
 import com.example.tobispring.chapter01.service.UserService;
+import com.example.tobispring.chapter01.service.UserServiceImpl;
 import java.util.Arrays;
 import java.util.List;
-import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +29,9 @@ public class UserServiceTest {
 
 
   List<User> users;
+
+  @Autowired
+  UserServiceImpl userServiceImpl;
 
   @Autowired
   UserService userService;
@@ -56,17 +59,15 @@ public class UserServiceTest {
   }
 
   @Test
-  public void upgradeLevels() throws Exception{
-    //
-    userService.setTransactionManager(transactionManager);
-    userService.setMailSender(mailSender);
+  public void upgradeLevels() {
+
     userDao.delteAll();
 
     for(User user: users)
       userDao.add(user);
 
     MockMailSender mockMailSender = new MockMailSender();
-    userService.setMailSender(mockMailSender);
+    userServiceImpl.setMailSender(mockMailSender);
 
     userService.upgradeLevels();
 

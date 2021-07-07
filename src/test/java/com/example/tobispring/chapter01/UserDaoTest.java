@@ -33,13 +33,10 @@ public class UserDaoTest {
     @Autowired
     private UserDao userDao;
 
-    @Autowired
-    private DataSource dataSource;
-
     @Test
     @DisplayName("UserDao 테스트 코드 입니다.")
     @Disabled
-    public void userDaoTestPhase1() throws SQLException {
+    public void userDaoTestPhase1() {
 
         User user = new User();
         user.setId("whiteship");
@@ -48,6 +45,7 @@ public class UserDaoTest {
         user.setLevel(Level.BASIC);
         user.setLogin(1);
         user.setRecommend(0);
+        user.setEmail("dlswp113@gmail.com");
 
         this.userDao.add(user);
 
@@ -76,6 +74,7 @@ public class UserDaoTest {
         user.setLevel(Level.BASIC);
         user.setLogin(1);
         user.setRecommend(1);
+        user.setEmail("dlswp113@gmail.com");
 
         this.userDao.add(user);
         assertEquals(1, userDao.getCount());
@@ -108,6 +107,7 @@ public class UserDaoTest {
         user.setLevel(Level.BASIC);
         user.setLogin(1);
         user.setRecommend(0);
+        user.setEmail("dlswp113@gmail.com");
 
         assertThrows(DuplicateUserIdException.class, ()->{
             userDao.add(user);
