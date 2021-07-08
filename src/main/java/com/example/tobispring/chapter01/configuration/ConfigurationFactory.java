@@ -2,7 +2,7 @@
  * =============================================================== File name : DaoFactory.java
  * Created by injeahwang on 2021-05-29 ===============================================================
  */
-package com.example.tobispring.chapter01;
+package com.example.tobispring.chapter01.configuration;
 
 
 import com.example.tobispring.chapter01.dao.UserDao;
@@ -19,7 +19,7 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.transaction.PlatformTransactionManager;
 
 @Configuration
-public class DaoFactory {
+public class ConfigurationFactory {
 
   @Value("${spring.datasource.url}")
   private String dataSourceUrl;

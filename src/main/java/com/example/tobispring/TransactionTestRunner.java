@@ -5,17 +5,15 @@
 package com.example.tobispring;
 
 import com.example.tobispring.chapter01.User;
+import com.example.tobispring.chapter01.configuration.TxProxyFactoryBean;
 import com.example.tobispring.chapter01.dao.UserDao;
 import com.example.tobispring.chapter01.enums.Level;
-import com.example.tobispring.chapter01.service.TransactionHandler;
 import com.example.tobispring.chapter01.service.UserService;
 import com.example.tobispring.chapter01.service.UserServiceImpl;
-import java.lang.reflect.Proxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.PlatformTransactionManager;
 
 /** ApplicationRunner를 이용하면,
  * Boot가 뜨면서 특정한 동작을 수행할 수 있도록 합니다.
@@ -29,21 +27,14 @@ public class TransactionTestRunner implements ApplicationRunner {
   UserDao userDao;
 
   @Autowired
-  PlatformTransactionManager transactionManager;
+  TxProxyFactoryBean txProxyFactoryBean;
 
   /** ApplicationRunner 인터페이스를 구현하면 run 메서드를 override 해야합니다. */
   @Override
   public void run(ApplicationArguments args) throws Exception {
 
-    TransactionHandler txHandler = new TransactionHandler();
-    txHandler.setTarget(userServiceImpl);
-    txHandler.setTransactionManager(transactionManager);
-    txHandler.setPattern("upgradeLevels");
-
-    UserService txUserService = (UserService) Proxy.newProxyInstance(
-        getClass().getClassLoader(),new Class[]{UserService.class}, txHandler
-    );
-
+    txProxyFactoryBean.setTarget(userServiceImpl);
+    UserService txUserService = (UserService) txProxyFactoryBean.getObject();
 
     /**Upgrade 예제 */
     userDao.deleteAll(); //초기화
