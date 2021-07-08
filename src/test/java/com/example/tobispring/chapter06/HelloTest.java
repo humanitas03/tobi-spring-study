@@ -5,7 +5,9 @@
 package com.example.tobispring.chapter06;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
+import java.lang.reflect.Proxy;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -29,5 +31,19 @@ public class HelloTest {
     assertEquals("Hello jay", targetHello.sayHello("jay"));
     assertEquals("Hi jay", targetHello.sayHi("jay"));
     assertEquals("Thank you jay", targetHello.sayThankyou("jay"));
+  }
+
+  @Test
+  @DisplayName("Dynamic Hello Proxy 테스트 입니다.")
+  public void helloDynamicProxyTest(){
+    Hello proxiedHello = (Hello) Proxy.newProxyInstance(
+        getClass().getClassLoader(),
+        new Class[]{Hello.class},
+        new UppercaseHandler(new HelloTarget())
+    );
+
+    assertEquals("HELLO JAY", proxiedHello.sayHello("jay"));
+    assertEquals("HI JAY", proxiedHello.sayHi("jay"));
+    assertNotEquals("THANK YOU JAY", proxiedHello.sayThankyou("jay")); // 얘는 변환이 안됩니다.
   }
 }
