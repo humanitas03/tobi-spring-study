@@ -5,14 +5,13 @@
 package com.example.tobispring;
 
 import com.example.tobispring.chapter01.User;
-import com.example.tobispring.chapter01.UserDao;
+import com.example.tobispring.chapter01.dao.UserDao;
+import com.example.tobispring.chapter01.dao.UserJdbcDao;
 import com.example.tobispring.chapter01.enums.Level;
-import com.example.tobispring.chapter01.service.UserServiceImpl;
 import com.example.tobispring.chapter01.service.UserServiceTx;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 /** ApplicationRunner를 이용하면,
@@ -30,7 +29,7 @@ public class TransactionTestRunner implements ApplicationRunner {
   @Override
   public void run(ApplicationArguments args) throws Exception {
     /**Upgrade 예제 */
-    userDao.delteAll(); //초기화
+    userDao.deleteAll(); //초기화
     for(int i=0; i<10; i++){
       userServiceTx.add(new User("ID_"+i, "name"+i,"123","dlswp113@gmail.com", Level.BASIC,55,1));
     }

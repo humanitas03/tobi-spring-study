@@ -5,10 +5,10 @@
 package com.example.tobispring.chapter01;
 
 
-import com.example.tobispring.chapter01.service.UserService;
+import com.example.tobispring.chapter01.dao.UserDao;
+import com.example.tobispring.chapter01.dao.UserJdbcDao;
 import com.example.tobispring.chapter01.service.UserServiceImpl;
 import com.example.tobispring.chapter01.service.UserServiceTx;
-import javax.management.MXBean;
 import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -49,9 +49,9 @@ public class DaoFactory {
 
   @Bean
   public UserDao userDao(){
-    UserDao userDao = new UserDao();
-    userDao.setDataSource(dataSource());
-    return userDao;
+    UserJdbcDao userJdbcDao = new UserJdbcDao();
+    userJdbcDao.setDataSource(dataSource());
+    return userJdbcDao;
   }
 
   /** Java Configuration을 이용한 Bean 등록 */

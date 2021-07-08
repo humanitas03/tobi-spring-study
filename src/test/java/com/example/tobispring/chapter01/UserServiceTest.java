@@ -8,6 +8,8 @@ import static com.example.tobispring.chapter01.service.UserServiceImpl.MIN_LOGOU
 import static com.example.tobispring.chapter01.service.UserServiceImpl.MIN_RECCOMEND_FOR_GOLD;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import com.example.tobispring.chapter01.dao.UserDao;
+import com.example.tobispring.chapter01.dao.UserJdbcDao;
 import com.example.tobispring.chapter01.enums.Level;
 import com.example.tobispring.chapter01.service.UserService;
 import com.example.tobispring.chapter01.service.UserServiceImpl;
@@ -61,7 +63,7 @@ public class UserServiceTest {
   @Test
   public void upgradeLevels() {
 
-    userDao.delteAll();
+    userDao.deleteAll();
 
     for(User user: users)
       userDao.add(user);

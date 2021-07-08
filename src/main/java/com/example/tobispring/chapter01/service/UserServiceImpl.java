@@ -5,7 +5,8 @@
 package com.example.tobispring.chapter01.service;
 
 import com.example.tobispring.chapter01.User;
-import com.example.tobispring.chapter01.UserDao;
+import com.example.tobispring.chapter01.dao.UserDao;
+import com.example.tobispring.chapter01.dao.UserJdbcDao;
 import com.example.tobispring.chapter01.enums.Level;
 import java.util.List;
 import org.springframework.mail.MailSender;

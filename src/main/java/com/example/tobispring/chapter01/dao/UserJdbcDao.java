@@ -4,8 +4,9 @@
  * Created by injeahwang on 2021-05-24
  * ===============================================================
  */
-package com.example.tobispring.chapter01;
+package com.example.tobispring.chapter01.dao;
 
+import com.example.tobispring.chapter01.User;
 import com.example.tobispring.chapter01.enums.Level;
 import com.example.tobispring.chapter01.exception.DuplicateUserIdException;
 import java.sql.*;
@@ -23,7 +24,7 @@ import org.springframework.jdbc.core.RowMapper;
 /** Chapter 1. UserDaO
  *  -
  */
-public class UserDao {
+public class UserJdbcDao implements UserDao {
 
     private JdbcTemplate jdbcTemplate;
 
@@ -32,6 +33,7 @@ public class UserDao {
      * ch-1.3.1 독립된 SimpleConnectionMaker를 주입받아 커넥션 실행
      * ch-3.3.1 user정보를 AddStatement에 전달.
      * */
+    @Override
     public void add(User user) throws DuplicateUserIdException {
         try{
             this.jdbcTemplate.update("insert into users(id, name, password, level, login, recommend, email)"
@@ -45,6 +47,7 @@ public class UserDao {
     /** 조회 실행 결과
      * ch-1.3.1 독립된 SimpleConnectionMaker를 주입받아 커넥션 실행
      * */
+    @Override
     public User get(String id) {
        return this.jdbcTemplate.queryForObject("select * from users where id=?", new Object[]{id},
            (rs, rowNum) -> {
@@ -61,16 +64,19 @@ public class UserDao {
     }
 
     /** ch.3.2.2 클라이언트 책임을 담당할 deleteAll()메서드*/
-    public void delteAll() {
+    @Override
+    public void deleteAll() {
         /** 다음 스텝을 위해 jdbcTemplate적용 */
         this.jdbcTemplate.update(con -> con.prepareStatement("delete from users"));
     }
 
+    @Override
     public int getCount() {
         /** may produce NullPointerException*/
        return this.jdbcTemplate.queryForObject("select count(*) from users", Integer.class);
     }
 
+  @Override
     public List<User> getAll() {
         return this.jdbcTemplate.query("select * from users order by id",
             (rs, rowNum) -> {
@@ -86,6 +92,7 @@ public class UserDao {
             });
     }
 
+    @Override
     public void update(User user){
       this.jdbcTemplate.update(
           "update users set name=?, password=?, level=?, login=?, recommend=?, email=? where id=?",
@@ -93,6 +100,7 @@ public class UserDao {
           user.getId()
       );
     }
+
 
     public void setDataSource(DataSource dataSource){
         this.jdbcTemplate = new JdbcTemplate(dataSource);

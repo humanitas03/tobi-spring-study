@@ -10,10 +10,10 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.example.tobispring.chapter01.dao.UserDao;
+import com.example.tobispring.chapter01.dao.UserJdbcDao;
 import com.example.tobispring.chapter01.enums.Level;
 import com.example.tobispring.chapter01.exception.DuplicateUserIdException;
-import javax.sql.DataSource;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,9 +21,6 @@ import org.junit.jupiter.api.Test;
 import java.sql.SQLException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.DuplicateKeyException;
-import org.springframework.jdbc.support.SQLErrorCodeSQLExceptionTranslator;
-import org.springframework.jdbc.support.SQLExceptionTranslator;
 import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
@@ -64,8 +61,8 @@ public class UserDaoTest {
     @Test
     @DisplayName("토비책 테스트")
     public void addAndGet() throws SQLException {
-        this.userDao.delteAll(); //모두 지운다.
-        assertEquals(0,userDao.getCount());
+        this.userDao.deleteAll(); //모두 지운다.
+        assertEquals(0, userDao.getCount());
 
         User user = new User();
         user.setId("gyumee");
@@ -92,14 +89,14 @@ public class UserDaoTest {
     @DisplayName("getAll 테스트")
     @Disabled
     public void getAllTest() {
-        userDao.delteAll();
+        userDao.deleteAll();
 
     }
 
     @Test
     @DisplayName("SQL Exception 전환 기능 테스트")
     public void sqlExceptionTranslate() {
-        userDao.delteAll();
+        userDao.deleteAll();
         User user = new User();
         user.setPassword("123");
         user.setId("jay");
