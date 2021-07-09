@@ -8,8 +8,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.lang.reflect.Proxy;
+import org.aopalliance.intercept.MethodInterceptor;
+import org.aopalliance.intercept.MethodInvocation;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.aop.framework.ProxyFactoryBean;
 
 public class HelloTest {
 
@@ -45,5 +48,27 @@ public class HelloTest {
     assertEquals("HELLO JAY", proxiedHello.sayHello("jay"));
     assertEquals("HI JAY", proxiedHello.sayHi("jay"));
     assertNotEquals("THANK YOU JAY", proxiedHello.sayThankyou("jay")); // 얘는 변환이 안됩니다.
+  }
+
+  @Test
+  @DisplayName("proxyFactoryBean 테스트")
+  public void proxyFactoryBean(){
+    ProxyFactoryBean pfBean = new ProxyFactoryBean();
+    pfBean.setTarget(new HelloTarget());
+    pfBean.addAdvice(new UppercaseAdvice());
+
+    Hello proxiedHello = (Hello) pfBean.getObject();
+
+    assertEquals("HELLO JAY", proxiedHello.sayHello("jay"));
+    assertEquals("HI JAY", proxiedHello.sayHi("jay"));
+    assertEquals("THANK YOU JAY", proxiedHello.sayThankyou("jay"));
+  }
+
+  static class UppercaseAdvice implements MethodInterceptor {
+    public Object invoke(MethodInvocation invocation) throws Throwable {
+      String ret = (String)invocation.proceed();
+      assert ret != null;
+      return ret.toUpperCase();
+    }
   }
 }

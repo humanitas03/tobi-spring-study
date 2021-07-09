@@ -10,6 +10,7 @@ import com.example.tobispring.chapter01.dao.UserDao;
 import com.example.tobispring.chapter01.enums.Level;
 import com.example.tobispring.chapter01.service.UserService;
 import com.example.tobispring.chapter01.service.UserServiceImpl;
+import org.springframework.aop.framework.ProxyFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -21,20 +22,20 @@ import org.springframework.stereotype.Component;
 @Component
 //@Profile("DISABLED") //테스트 하지 않을 때, Disabled 합니다.
 public class TransactionTestRunner implements ApplicationRunner {
-  @Autowired
-  UserServiceImpl userServiceImpl;
+
   @Autowired
   UserDao userDao;
 
   @Autowired
-  TxProxyFactoryBean txProxyFactoryBean;
+  ProxyFactoryBean proxyFactoryBean;
+
 
   /** ApplicationRunner 인터페이스를 구현하면 run 메서드를 override 해야합니다. */
   @Override
   public void run(ApplicationArguments args) throws Exception {
 
-    txProxyFactoryBean.setTarget(userServiceImpl);
-    UserService txUserService = (UserService) txProxyFactoryBean.getObject();
+    UserService txUserService = (UserService) proxyFactoryBean.getObject();
+
 
     /**Upgrade 예제 */
     userDao.deleteAll(); //초기화
