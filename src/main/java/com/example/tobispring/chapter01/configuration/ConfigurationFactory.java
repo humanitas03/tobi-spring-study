@@ -11,6 +11,7 @@ import com.example.tobispring.chapter01.dao.UserJdbcDao;
 import com.example.tobispring.chapter01.service.UserService;
 import com.example.tobispring.chapter01.service.UserServiceImpl;
 import com.example.tobispring.chapter01.service.UserServiceTx;
+import java.util.Properties;
 import javax.sql.DataSource;
 import org.springframework.aop.framework.ProxyFactoryBean;
 import org.springframework.aop.support.DefaultPointcutAdvisor;
@@ -99,7 +100,15 @@ public class ConfigurationFactory {
   @Bean
   public JavaMailSenderImpl mailSender(){
     JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-    mailSender.setHost("mail.server.com");
+    mailSender.setHost("smtp.gmail.com");
+    mailSender.setPort(587);
+    /** TODO 구글 계정 정보 입력이 필요함 */
+    mailSender.setUsername("테스트용 구글 계정을 입력하세요!!");
+    mailSender.setPassword("비밀번호를입력하세요!!");
+    Properties javaMailProperties = new Properties();
+    javaMailProperties.setProperty("mail.smtp.auth", "true");
+    javaMailProperties.setProperty("mail.smtp.starttls.enable", "true");
+    mailSender.setJavaMailProperties(javaMailProperties);
     return mailSender;
   }
 

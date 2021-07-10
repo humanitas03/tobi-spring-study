@@ -5,22 +5,21 @@
 package com.example.tobispring;
 
 import com.example.tobispring.chapter01.User;
-import com.example.tobispring.chapter01.configuration.TxProxyFactoryBean;
 import com.example.tobispring.chapter01.dao.UserDao;
 import com.example.tobispring.chapter01.enums.Level;
 import com.example.tobispring.chapter01.service.UserService;
-import com.example.tobispring.chapter01.service.UserServiceImpl;
 import org.springframework.aop.framework.ProxyFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 /** ApplicationRunner를 이용하면,
  * Boot가 뜨면서 특정한 동작을 수행할 수 있도록 합니다.
  */
 @Component
-//@Profile("DISABLED") //테스트 하지 않을 때, Disabled 합니다.
+@Profile("DISABLED") //테스트 하지 않을 때, Disabled 합니다.
 public class TransactionTestRunner implements ApplicationRunner {
 
   @Autowired
