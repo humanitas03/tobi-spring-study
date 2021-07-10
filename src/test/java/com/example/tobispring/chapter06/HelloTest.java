@@ -12,7 +12,11 @@ import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.aop.ClassFilter;
+import org.springframework.aop.Pointcut;
 import org.springframework.aop.framework.ProxyFactoryBean;
+import org.springframework.aop.support.DefaultPointcutAdvisor;
+import org.springframework.aop.support.NameMatchMethodPointcut;
 
 public class HelloTest {
 
@@ -62,6 +66,49 @@ public class HelloTest {
     assertEquals("HELLO JAY", proxiedHello.sayHello("jay"));
     assertEquals("HI JAY", proxiedHello.sayHi("jay"));
     assertEquals("THANK YOU JAY", proxiedHello.sayThankyou("jay"));
+  }
+
+  @Test
+  @DisplayName("확장 포인트컷 테스트 입니다. p.480")
+  public void classNamePointcutAdvisor() {
+    //포인트 컷 준비
+    NameMatchMethodPointcut classMethodPointcut = new NameMatchMethodPointcut() {
+      @Override
+      public ClassFilter getClassFilter() {
+        return clazz -> clazz.getSimpleName().startsWith("HelloT"); //클래스 이름이 HelloT로 시작하는 것만 선정한다.
+      }
+    };
+
+    // SayH로 시작하는 메소드 이름을 가진 메소드만 선정한다.
+    classMethodPointcut.setMappedName("sayH*");
+
+    // 테스트
+    checkAdviced(new HelloTarget(), classMethodPointcut, true);
+
+    //적용 클래스가 아닙니다.
+    class HelloWorld extends HelloTarget{};
+    checkAdviced(new HelloWorld(), classMethodPointcut, false);
+
+    //적용 클래스입니다.
+    class HelloToJay extends HelloTarget{};
+    checkAdviced(new HelloTarget(), classMethodPointcut, true);
+  }
+
+  private void checkAdviced(Object target, Pointcut pointcut, boolean adviced){
+    ProxyFactoryBean pfBean = new ProxyFactoryBean();
+    pfBean.setTarget(target);
+    pfBean.addAdvisor(new DefaultPointcutAdvisor(pointcut, new UppercaseAdvice()));
+    Hello proxiedHello = (Hello) pfBean.getObject();
+
+    if(adviced){
+      assertEquals("HELLO JAY", proxiedHello.sayHello("jay"));
+      assertEquals("HI JAY", proxiedHello.sayHi("jay"));
+      assertEquals("Thank you jay", proxiedHello.sayThankyou("jay"));
+    } else {
+      assertEquals("Hello jay", proxiedHello.sayHello("jay"));
+      assertEquals("Hi jay", proxiedHello.sayHi("jay"));
+      assertEquals("Thank you jay", proxiedHello.sayThankyou("jay"));
+    }
   }
 
   static class UppercaseAdvice implements MethodInterceptor {
